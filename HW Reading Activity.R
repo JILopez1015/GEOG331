@@ -30,4 +30,8 @@ sum(dice)
 }
 rolls<-replicate(10000, roll())
 qplot(rolls, binwidth=1)
-#chpt
+#chpt 5 examples below
+#
+#
+#
+#

@@ -39,4 +39,4 @@ hand<-c("ace", "king", "queen", "jack", "ten")
 suit<-c("spades","spades","spades","spades","spades")
 hand1<-c(hand, suit)
 matrix(hand1, nrow=5, ncol=2)
-#page 17
+#left off page 17, review last couple pages

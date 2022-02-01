@@ -1,4 +1,4 @@
-+install.packages("ggplot2")
+install.packages("ggplot2")
 library("ggplot2")
 qplot
 x<-c(-1, -.5, 0, .5, 1)
@@ -30,13 +30,49 @@ sum(dice)
 }
 rolls<-replicate(10000, roll())
 qplot(rolls, binwidth=1)
+
+
 #chpt 5 examples below
-#
-#
-#
-#
+
+
+
+
+
 hand<-c("ace", "king", "queen", "jack", "ten")
 suit<-c("spades","spades","spades","spades","spades")
 hand1<-c(hand, suit)
 matrix(hand1, nrow=5, ncol=2)
-#left off page 17, review last couple pages
+
+
+
+#pg17 activity 5.5
+
+
+card<- list("ace","hearts", 1)
+card
+
+
+
+#creating data frame for clubs playing card (clubs.pc)
+
+clubs.pc<- data.frame(face= c("ace", "two", "six"), 
+                      suit= c("clubs", "clubs", "clubs"), value= c(1:3))
+
+
+#creating deck
+#loading file for card deck
+# file location within PC Z:\\students\\jlopez\\HW\\CHpt 5\\deck
+
+deck <- read.csv("Z:/students/jlopez/HW/CHpt 5/deck.csv")
+View(deck)
+
+#tocheck if it worked 
+head(deck)
+
+
+#saving as csv
+
+write.csv(deck, file= "cards.csv", row.names=FALSE)
+
+
+

@@ -69,3 +69,222 @@ mean(datW$TMAX[datW$NAME =="ABERDEEN, WA US"], na.rm=TRUE)
 #calc avg daily temp TAVE
 datW$TAVE<- datW$TMIN + ((datW$TMAX-datW$TMIN)/2)
 
+
+#getting the mean across all sites, FUN indicates function we want to use
+#by function is a list of 1 or more variables to index over
+
+averageTemp<- aggregate(datW$TAVE, by= list(datW$NAME), FUN="mean", na.rm=TRUE)
+
+
+#change the automatic column names to be more meaningful
+#note that MAAT is a common abbreviation for Mean Annual Air Temperature
+
+colnames(averageTemp)<-c("NAME", "MAAT")
+
+
+#convert level to number for factor data type
+#will have to reference the level output or look at the row of data to see
+    #the character designation.
+
+datW$siteN<- as.numeric(datW$NAME)
+
+
+
+#make a histogram for the first site in our levels
+#main= is the title name argument.
+#paste the actual name of the factor not the numeric index
+#since that will be more meaningful.
+
+hist(datW$TAVE[datW$siteN==1],
+     freq=FALSE,
+     main= paste(levels(datW$NAME)[1]),
+     xlab = "Average Daily Temperature (C)",
+     ylab = "Relative Freq",
+     col = "grey50",
+     border = "white")
+
+#--------------------------
+#Q3, explanation on GDoc
+?hist
+
+#--------------------------
+
+#add mean line with red (tomato3) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+    #function means add a vertical line.
+
+abline(v=mean(datW$TAVE[datW$siteN==1],na.rm=TRUE),
+       col="tomato3",
+       lwd=3)
+
+#add standard deviation line below the mean with red color
+#and thickness of 3
+
+abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
+       == 1],na.rm=TRUE), 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with red (tomato3) color
+#and thickness of 3
+abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+#--------------------------
+#Q4 making 3 other histograms
+#combining hist
+par(mfrow=c(2,2))
+
+---######Livermore Avg Daily Temp
+hist(datW$TAVE[datW$siteN == 2],
+     freq=FALSE, 
+     main = paste(levels(datW$NAME)[2]),
+     xlab = "Average daily temperature (degrees C)", 
+     ylab="Relative frequency",
+     col="darksalmon",
+     border="white")
+
+#add mean line with grey (grey33) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+#function means add a vertical line.
+
+abline(v=mean(datW$TAVE[datW$siteN==2],na.rm=TRUE),
+       col="grey33",
+       lwd=3)
+
+#add standard deviation line below the mean with grey (grey33)
+#and thickness of 3
+
+abline(v = mean(datW$TAVE[datW$siteN == 2],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
+       == 2],na.rm=TRUE), 
+       col = "grey33", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with grey color
+#and thickness of 3
+abline(v = mean(datW$TAVE[datW$siteN == 2],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
+       == 2],na.rm=TRUE), 
+       col = "grey33", 
+       lty = 3,
+       lwd = 3)
+
+
+---###### Mandan Exp. Station Avg Daily Temp
+hist(datW$TAVE[datW$siteN == 3],
+     freq=FALSE, 
+     main = paste(levels(datW$NAME)[3]),
+     xlab = "Average daily temperature (degrees C)", 
+     ylab="Relative frequency",
+     col="deepskyblue2",
+     border="white")
+
+#add mean line with grey (grey33) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+#function means add a vertical line.
+
+abline(v=mean(datW$TAVE[datW$siteN==3],na.rm=TRUE),
+       col="grey33",
+       lwd=3)
+
+#add standard deviation line below the mean with grey (grey33)
+#and thickness of 3
+
+abline(v = mean(datW$TAVE[datW$siteN == 3],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
+       == 3],na.rm=TRUE), 
+       col = "grey33", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with grey color
+#and thickness of 3
+abline(v = mean(datW$TAVE[datW$siteN == 3],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
+       == 3],na.rm=TRUE), 
+       col = "grey33", 
+       lty = 3,
+       lwd = 3)
+
+---###### Mormon Flat Avg Daily Temp
+hist(datW$TAVE[datW$siteN == 4],
+     freq=FALSE, 
+     main = paste(levels(datW$NAME)[4]),
+     xlab = "Average daily temperature (degrees C)", 
+     ylab="Relative frequency",
+     col="forestgreen",
+     border="white")
+
+#add mean line with orange (goldenrod3) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+#function means add a vertical line.
+
+abline(v=mean(datW$TAVE[datW$siteN==4],na.rm=TRUE),
+       col="goldenrod3",
+       lwd=3)
+
+#add standard deviation line below the mean with orange (goldenrod3)
+#and thickness of 3
+
+abline(v = mean(datW$TAVE[datW$siteN == 4],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
+       == 4],na.rm=TRUE), 
+       col = "goldenrod3", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with orange color
+#and thickness of 3
+abline(v = mean(datW$TAVE[datW$siteN == 4],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
+       == 4],na.rm=TRUE), 
+       col = "goldenrod3", 
+       lty = 3,
+       lwd = 3)
+
+---######Aberdeen Avg Daily Temp
+
+hist(datW$TAVE[datW$siteN==1],
+     freq=FALSE,
+     main= paste(levels(datW$NAME)[1]),
+     xlab = "Average Daily Temperature (C)",
+     ylab = "Relative Freq",
+     col = "grey50",
+     border = "white")
+
+#add mean line with red (tomato3) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+#function means add a vertical line.
+
+abline(v=mean(datW$TAVE[datW$siteN==1],na.rm=TRUE),
+       col="tomato3",
+       lwd=3)
+
+#add standard deviation line below the mean with red color
+#and thickness of 3
+
+abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
+                                                                      == 1],na.rm=TRUE), 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with red (tomato3) color
+#and thickness of 3
+abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+
+
+
+
+
+
+
+

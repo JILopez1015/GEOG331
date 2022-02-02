@@ -36,8 +36,8 @@ datW$year<- as.numeric(format(datW$dateF, "%Y"))
 #5 objects each
 
 #creating character 
-Q2<- c("Thi$ is a character example.")
-Q2
+Q2<- c("Thi$", "is", "a", "character", "example.")
+Q2Q2
 typeof(Q2)
 
 #numeric example
@@ -96,19 +96,6 @@ datW$siteN<- as.numeric(datW$NAME)
 
 
 
-#make a histogram for the first site in our levels
-#main= is the title name argument.
-#paste the actual name of the factor not the numeric index
-#since that will be more meaningful.
-
-hist(datW$TAVE[datW$siteN==1],
-     freq=FALSE,
-     main= paste(levels(datW$NAME)[1]),
-     xlab = "Average Daily Temperature (C)",
-     ylab = "Relative Freq",
-     col = "grey50",
-     border = "white")
-
 #--------------------------
 #Q3, explanation on GDoc
 ?hist
@@ -146,7 +133,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
 par(mfrow=c(2,2))
 
 ######Livermore Avg Daily Temp
-hist(datW$TAVE[datW$siteN == 2],
+h2<-hist(datW$TAVE[datW$siteN == 2],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[2]),
      xlab = "Average daily temperature (degrees C)", 
@@ -182,7 +169,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 2],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
 
 
 ###### Mandan Exp. Station Avg Daily Temp
-hist(datW$TAVE[datW$siteN == 3],
+h3 <-hist(datW$TAVE[datW$siteN == 3],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[3]),
      xlab = "Average daily temperature (degrees C)", 
@@ -217,7 +204,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 3],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
        lwd = 3)
 
 ###### Mormon Flat Avg Daily Temp
-hist(datW$TAVE[datW$siteN == 4],
+h4<-hist(datW$TAVE[datW$siteN == 4],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[4]),
      xlab = "Average daily temperature (degrees C)", 
@@ -253,7 +240,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 4],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
 
 ######Aberdeen Avg Daily Temp
 
-hist(datW$TAVE[datW$siteN==1],
+h1 <-hist(datW$TAVE[datW$siteN==1],
      freq=FALSE,
      main= paste(levels(datW$NAME)[1]),
      xlab = "Average Daily Temperature (C)",
@@ -274,22 +261,79 @@ abline(v=mean(datW$TAVE[datW$siteN==1],na.rm=TRUE),
 #and thickness of 3
 
 abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
-                                                                      == 1],na.rm=TRUE), 
+       == 1],na.rm=TRUE), 
        col = "tomato3", 
        lty = 3,
        lwd = 3)
 
 #add standard deviation line above the mean with red (tomato3) color
 #and thickness of 3
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
+abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
+       == 1],na.rm=TRUE), 
        col = "tomato3", 
        lty = 3,
        lwd = 3)
 
 
+####------
+
+###the seq function generates a sequence of numbers that we can use to plot the 
+    #normal across the range of temperature values
+x.plot <- seq(-10,30, length.out =100)
+
+##For h1
+#the dnorm function will produce the probability density based on a mean and 
+    #standard deviation.
+y.plot <- dnorm(seq(-10,30,length.out =100),
+mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE),
+sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE))
+y.plot
 
 
+#create a density that is scaled to fit in the plot since the density has a 
+#     different range from the data density.
+#!!! this is helpful for putting multiple things on the same plot
+#!!! It might seem confusing at first. It means the maximum value of the plot 
+    #is always the same between the two datasets on the plot. Here both plots 
+    #share zero as a minimum.
+y.scaled <- (max(h1$density)/max(y.plot)) * y.plot
+y.scaled
 
+#points function adds points or lines to a graph
+#the first two arguements are the x coordinates and the y coordinates.
+points(x.plot,
+       y.scaled, 
+       type ="l",
+       col = "royalblue3",
+       lwd =4,
+       lty =2)
+
+###h2 distribution
+
+#the seq function generates a sequence of numbers that we can use to plot the normal across the range of temperature values
+
+x.plot2 <- seq(0,40, length.out=100)
+
+
+#the dnorm function will produce the probability density based on a mean and 
+    #standard deviation.
+
+y.plot2<-dnorm(x.plot2,mean(datW$TAVE[datW$siteN==2],na.rm=TRUE),sd(datW$TAVE[datW$siteN==2],na.rm=TRUE))
+
+#creating density scaled to h2
+
+y.scaled2<-(max(h2$density)/max(y.plot2))*y.plot2
+
+
+#adding point to h2
+points(x.plot2,y.scaled2,
+       type="l",
+       col="royalblue3",
+       lwd=4,
+       lty=2)
+
+##!!!how do I plot points into other graphs
+##currently plotting onto Aberdeen
 
 
 

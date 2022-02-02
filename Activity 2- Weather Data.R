@@ -1,6 +1,12 @@
 #Activity 22 Weather Data Analysis
 #JL 2/1/2022
 
+#set working directory to my noaa data folder
+#start with net work drive and "\" tab to have auto fill
+setwd("Z:/students/jlopez/HW/Activity 2/NOAA Weather Data/")
+
+#see what my working directory is
+getwd()
 
 #read in weather station data from data folder
 
@@ -139,7 +145,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
 #combining hist
 par(mfrow=c(2,2))
 
----######Livermore Avg Daily Temp
+######Livermore Avg Daily Temp
 hist(datW$TAVE[datW$siteN == 2],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[2]),
@@ -175,7 +181,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 2],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
        lwd = 3)
 
 
----###### Mandan Exp. Station Avg Daily Temp
+###### Mandan Exp. Station Avg Daily Temp
 hist(datW$TAVE[datW$siteN == 3],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[3]),
@@ -210,7 +216,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 3],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
        lty = 3,
        lwd = 3)
 
----###### Mormon Flat Avg Daily Temp
+###### Mormon Flat Avg Daily Temp
 hist(datW$TAVE[datW$siteN == 4],
      freq=FALSE, 
      main = paste(levels(datW$NAME)[4]),
@@ -245,7 +251,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 4],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
        lty = 3,
        lwd = 3)
 
----######Aberdeen Avg Daily Temp
+######Aberdeen Avg Daily Temp
 
 hist(datW$TAVE[datW$siteN==1],
      freq=FALSE,

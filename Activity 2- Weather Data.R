@@ -1,5 +1,5 @@
 #Activity 22 Weather Data Analysis
-#JL 2/1/2022
+#JL 2/4/2022
 
 #set working directory to my noaa data folder
 #start with net work drive and "\" tab to have auto fill
@@ -130,7 +130,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
 #--------------------------
 #Q4 making 3 other histograms
 #combining hist
-par(mfrow=c(2,2))
+#par(mfrow=c(2,2))
 
 ######Livermore Avg Daily Temp
 h2<-hist(datW$TAVE[datW$siteN == 2],
@@ -275,7 +275,7 @@ abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN
        lwd = 3)
 
 
-####------
+##plotting distribution
 
 ###the seq function generates a sequence of numbers that we can use to plot the 
     #normal across the range of temperature values
@@ -308,32 +308,127 @@ points(x.plot,
        lwd =4,
        lty =2)
 
-###h2 distribution
+#--------------------------
+##Q5: Not all locations hav a normal distribution. Livermore and Andan both have 
+    #significantly higher values after mean. Normally distributed data would 
+    #have lower values before and after mean. 
 
-#the seq function generates a sequence of numbers that we can use to plot the normal across the range of temperature values
+##Pnorm getting values BELOW X
+#pnorm(value to evaluate at (note this will evaluate for all values and below),
+  #mean, standard deviation)
+#probability of getting below 0 temps
+pnorm(0, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE), 
+      sd(datW$TAVE[datW$siteN==1], na.rm=TRUE))
 
-x.plot2 <- seq(0,40, length.out=100)
+#probability of getting below 5 temps
+pnorm(5, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE), 
+      sd(datW$TAVE[datW$siteN==1], na.rm=TRUE))
+
+#probability of getting between 0 and 5 temp; range from 0-5
+(pnorm(5, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE), 
+      sd(datW$TAVE[datW$siteN==1], na.rm=TRUE)))-
+  (pnorm(0, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE),
+         sd(datW$TAVE[datW$siteN==1], na.rm=TRUE)))
+
+##Pnorm getting values ABOVE X
+#getting probability of getting temps above 20
+1- (pnorm(20, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE),
+          sd(datW$TAVE[datW$siteN==1], na.rm=TRUE)))
+##qnorm- getting values associated with the probability within curve
+qnorm(.95, mean(datW$TAVE[datW$siteN==1], na.rm=TRUE),
+                sd(datW$TAVE[datW$siteN==1], na.rm=TRUE))
+#--------------------------
+#Q6
+qnorm(.95, ((mean(datW$TAVE[datW$siteN==1], na.rm=TRUE))+4),
+      sd(datW$TAVE[datW$siteN==1], na.rm=TRUE))
+##If mean increased by 4 degrees C, then the probability of getting extreme event
+  #rises to 22.51% compared to 18.51% from before 4 degree increase
+
+#--------------------------
+#Q7
+##making histogram for daily precipitation in Aberdeen, siteN=1
+  #precipitation=PRCP
+
+#precipitation data for site 1- Aberdeen, not averaged in any way
+prcp.data1<-datW$PRCP[datW$siteN==1]
+
+h1.p <-hist(prcp.data1,
+          freq=FALSE,
+          main= paste(levels(datW$NAME)[1]),
+          xlab = "Daily Percipitation(mm)",
+          ylab = "Relative Freq",
+          col = "grey50",
+          border = "white")
+##The histogram for Aberdeen precipitation looks like the exponential distribution. 
+  #The exponential distribution can start with a large number and drop very quickly. 
+
+#--------------------------
+#Q8
+
+##Sum of each year and each station
+prcpyrsum<-aggregate(datW$PRCP,list(datW$siteN,datW$NAME,datW$year), sum)
 
 
-#the dnorm function will produce the probability density based on a mean and 
-    #standard deviation.
-
-y.plot2<-dnorm(x.plot2,mean(datW$TAVE[datW$siteN==2],na.rm=TRUE),sd(datW$TAVE[datW$siteN==2],na.rm=TRUE))
-
-#creating density scaled to h2
-
-y.scaled2<-(max(h2$density)/max(y.plot2))*y.plot2
+#labeling columns for prcpyrsum
+#PRCPTBL<-setNames((prcpyrsum),c("St. #","St, Name","Year","Precipitation Sum"))
+PRCPTBL<-colnames(prcpyrsum)<-c("St. #","St. Name","Year","Precipitation Sum")
 
 
-#adding point to h2
-points(x.plot2,y.scaled2,
-       type="l",
-       col="royalblue3",
-       lwd=4,
-       lty=2)
 
-##!!!how do I plot points into other graphs
-##currently plotting onto Aberdeen
+#how to delete this funct.
+rm(prcp.st.yr.sum<-setNames(aggregate(datW$PRCP,list(datW$NAME,datW$year), sum)),c("Station","Year","Percipitation Sum")))
+
+#WHAT CLASS?--Character
+class(PRCPTBL["St.#"])
+
+#making station # numeric
+PRCPTBL$siteN<- as.numeric(PRCPTBL["St. #"])
+
+
+
+##recalling only station 4, AZ, from prcpyrsum= AnnualPRCP4
+AnnualPRCP4<-prcpyrsum$`St. #`==4
+###???returns back a lot of true and false???
+
+
+
+
+##making histogram for site 4, annual precipitation
+
+
+
+AnnualPrcpHist4<-hist(AnnualPRCP4,
+          freq=FALSE,
+          main= paste(levels(datW$NAME)[1]),
+          xlab = "Annual Percipitation (mm)",
+          ylab = "Relative Freq",
+          col = "grey50",
+          border = "white")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

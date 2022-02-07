@@ -1,5 +1,5 @@
 #Activity 22 Weather Data Analysis
-#JL 2/4/2022
+#JL 2/7/2022
 
 #set working directory to my noaa data folder
 #start with net work drive and "\" tab to have auto fill
@@ -368,15 +368,20 @@ h1.p <-hist(prcp.data1,
 ##Sum of each year and each station
 prcpyrsum<-aggregate(datW$PRCP,list(datW$siteN,datW$NAME,datW$year), sum)
 
-
 #labeling columns for prcpyrsum
-#PRCPTBL<-setNames((prcpyrsum),c("St. #","St, Name","Year","Precipitation Sum"))
-PRCPTBL<-colnames(prcpyrsum)<-c("St. #","St. Name","Year","Precipitation Sum")
+#PRCPTBL<-setNames((prcpyrsum),c("St.#","St.Name","Year","Precipitation Sum"))
+PRCPTBL<-colnames(prcpyrsum)<-c("St.#","St.Name","Year","Precipitation Sum")
+
+##sum of each year for station 4
+#AnnualPRCP4<-aggregate(PRCPTBL,by=list(PRCPTBL['St.#'=="4"],
+        #PRCPTBL['St.Name'=="MORMON FLAT, AZ US"],PRCPTBL["Year"]),sum)
+
+AnnualPRCP4<-getElement(prcpyrsum, "")
+  
+  prcpyrsum[prcpyrsum$"St.#"=="4"]
 
 
 
-#how to delete this funct.
-rm(prcp.st.yr.sum<-setNames(aggregate(datW$PRCP,list(datW$NAME,datW$year), sum)),c("Station","Year","Percipitation Sum")))
 
 #WHAT CLASS?--Character
 class(PRCPTBL["St.#"])
@@ -387,16 +392,13 @@ PRCPTBL$siteN<- as.numeric(PRCPTBL["St. #"])
 
 
 ##recalling only station 4, AZ, from prcpyrsum= AnnualPRCP4
-AnnualPRCP4<-prcpyrsum$`St. #`==4
+#AnnualPRCP4<-prcpyrsum$`St. #`==4
 ###???returns back a lot of true and false???
 
 
 
 
 ##making histogram for site 4, annual precipitation
-
-
-
 AnnualPrcpHist4<-hist(AnnualPRCP4,
           freq=FALSE,
           main= paste(levels(datW$NAME)[1]),
@@ -404,6 +406,18 @@ AnnualPrcpHist4<-hist(AnnualPRCP4,
           ylab = "Relative Freq",
           col = "grey50",
           border = "white")
+
+AnnualPrcpHist4<-hist(PRCPTBL$`St. #`[],
+                      freq=FALSE,
+                      main= paste(levels(datW$NAME)[1]),
+                      xlab = "Annual Percipitation (mm)",
+                      ylab = "Relative Freq",
+                      col = "grey50",
+                      border = "white")
+
+datW$PRCPTBL[PRCPTBL$St. #==4]
+                
+datW$TAVE[datW$siteN==1]
 
 
 

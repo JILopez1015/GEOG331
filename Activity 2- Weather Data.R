@@ -352,7 +352,7 @@ qnorm(.95, ((mean(datW$TAVE[datW$siteN==1], na.rm=TRUE))+4),
 #precipitation data for site 1- Aberdeen, not averaged in any way
 prcp.data1<-datW$PRCP[datW$siteN==1]
 
-h1.p <-hist(prcp.data1,
+PRCPDailyHist<-hist(prcp.data1,
           freq=FALSE,
           main= paste(levels(datW$NAME)[1]),
           xlab = "Daily Percipitation(mm)",
@@ -372,52 +372,96 @@ prcpyrsum<-aggregate(datW$PRCP,list(datW$siteN,datW$NAME,datW$year), sum)
 #PRCPTBL<-setNames((prcpyrsum),c("St.#","St.Name","Year","Precipitation Sum"))
 PRCPTBL<-colnames(prcpyrsum)<-c("St.#","St.Name","Year","Precipitation Sum")
 
-##sum of each year for station 4
-#AnnualPRCP4<-aggregate(PRCPTBL,by=list(PRCPTBL['St.#'=="4"],
-        #PRCPTBL['St.Name'=="MORMON FLAT, AZ US"],PRCPTBL["Year"]),sum)
-
-AnnualPRCP4<-getElement(prcpyrsum, "")
-  
-  prcpyrsum[prcpyrsum$"St.#"=="4"]
-
-
-
-
-#WHAT CLASS?--Character
-class(PRCPTBL["St.#"])
-
-#making station # numeric
-PRCPTBL$siteN<- as.numeric(PRCPTBL["St. #"])
-
-
-
-##recalling only station 4, AZ, from prcpyrsum= AnnualPRCP4
-#AnnualPRCP4<-prcpyrsum$`St. #`==4
-###???returns back a lot of true and false???
-
-
+##sum of each year for station 4, taking out rows with NA data
+#AnnualPRCP4<-na.omit(prcpyrsum[prcpyrsum$`St.#`==4,])
+AnnualPRCP4<-prcpyrsum[prcpyrsum$`St.#`==4,]
 
 
 ##making histogram for site 4, annual precipitation
-AnnualPrcpHist4<-hist(AnnualPRCP4,
+AnnualPrcpHist4<-hist(AnnualPRCP4$`Precipitation Sum`,
           freq=FALSE,
-          main= paste(levels(datW$NAME)[1]),
-          xlab = "Annual Percipitation (mm)",
+          main="Mormon Flat 1930-2019",
+          xlab = "Percipitation Totals from 1930-2019(mm)",
           ylab = "Relative Freq",
           col = "grey50",
           border = "white")
 
-AnnualPrcpHist4<-hist(PRCPTBL$`St. #`[],
-                      freq=FALSE,
-                      main= paste(levels(datW$NAME)[1]),
-                      xlab = "Annual Percipitation (mm)",
-                      ylab = "Relative Freq",
-                      col = "grey50",
-                      border = "white")
+#add mean line with red (tomato3) color
+#and thickness of 3
+#abline function allows us to add lines to a plot. The v argument in this 
+#function means add a vertical line.
 
-datW$PRCPTBL[PRCPTBL$St. #==4]
-                
-datW$TAVE[datW$siteN==1]
+#Mean of PRCP
+PRCPMean<-mean(AnnualPRCP4$`Precipitation Sum`,na.rm=TRUE)
+
+#STD of PRCP
+PRCPSTD<-sd(AnnualPRCP4$`Precipitation Sum`,na.rm=TRUE)
+
+abline(v=PRCPMean,
+       col="tomato3",
+       lwd=3)
+
+#add standard deviation line below the mean with red color
+#and thickness of 3
+
+abline(v = PRCPMean - PRCPSTD, 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+#add standard deviation line above the mean with red (tomato3) color
+#and thickness of 3
+abline(v = PRCPMean + PRCPSTD, 
+       col = "tomato3", 
+       lty = 3,
+       lwd = 3)
+
+
+##plotting distribution for AnnualPrcpHist4
+
+###the seq function generates a sequence of numbers that we can use to plot the 
+#normal across the range of percipitation values
+x.plot.p <- seq(100,800, length.out =100)
+
+
+#the dnorm function will produce the probability density based on a mean and 
+#standard deviation.
+y.plot.p <- dnorm(x.plot.p,PRCPMean,PRCPSTD)
+
+
+#create a density that is scaled to fit in the plot since the density has a 
+#     different range from the data density.
+#!!! this is helpful for putting multiple things on the same plot
+#!!! It might seem confusing at first. It means the maximum value of the plot 
+#is always the same between the two datasets on the plot. Here both plots 
+#share zero as a minimum.
+y.scaled.p <- (max(AnnualPrcpHist4$density)/max(y.plot.p)) * y.plot.p
+
+
+#points function adds points or lines to a graph
+#the first two arguments are the x coordinates and the y coordinates.
+points(x.plot.p,
+       y.scaled.p, 
+       type ="l",
+       col = "royalblue3",
+       lwd =4,
+       lty =2)
+
+##description in GDoc
+
+#--------------------------
+##Q9
+
+#Annual Precipitation across all sites
+##each year and each station
+PRCPAvg<-aggregate(datW$PRCP,list(datW$siteN,datW$NAME), 
+                          mean, na.rm= TRUE)
+
+#labeling columns for PRCPAnnualMean
+PRCPTBLMean<-colnames(PRCPAvg)<-
+  c("St.#","St.Name","Precipitation Average (mm)")
+
+
 
 
 

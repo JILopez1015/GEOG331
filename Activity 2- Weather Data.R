@@ -37,7 +37,7 @@ datW$year<- as.numeric(format(datW$dateF, "%Y"))
 
 #creating character 
 Q2<- c("Thi$", "is", "a", "character", "example.")
-Q2Q2
+
 typeof(Q2)
 
 #numeric example
@@ -100,32 +100,6 @@ datW$siteN<- as.numeric(datW$NAME)
 #Q3, explanation on GDoc
 ?hist
 
-#--------------------------
-
-#add mean line with red (tomato3) color
-#and thickness of 3
-#abline function allows us to add lines to a plot. The v argument in this 
-    #function means add a vertical line.
-
-abline(v=mean(datW$TAVE[datW$siteN==1],na.rm=TRUE),
-       col="tomato3",
-       lwd=3)
-
-#add standard deviation line below the mean with red color
-#and thickness of 3
-
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) - sd(datW$TAVE[datW$siteN
-       == 1],na.rm=TRUE), 
-       col = "tomato3", 
-       lty = 3,
-       lwd = 3)
-
-#add standard deviation line above the mean with red (tomato3) color
-#and thickness of 3
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
-       col = "tomato3", 
-       lty = 3,
-       lwd = 3)
 
 #--------------------------
 #Q4 making 3 other histograms
@@ -457,7 +431,7 @@ points(x.plot.p,
 PRCPAvg<-aggregate(datW$PRCP,list(datW$siteN,datW$NAME), 
                           mean, na.rm= TRUE)
 
-#labeling columns for PRCPAnnualMean
+#labeling columns for PRCPAvg
 PRCPTBLMean<-colnames(PRCPAvg)<-
   c("St.#","St.Name","Precipitation Average (mm)")
 

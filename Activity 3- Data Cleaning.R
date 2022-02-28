@@ -1,5 +1,5 @@
 #Activity 3 Questions
-#JL 2/27/22
+#JL 2/28/22
 
 
 #Testing Code with Assert----
@@ -54,7 +54,8 @@ print(datW[1,])
 
 #installing lubridate package----
 
-install.packages(c("lubridate"))
+#install.packages(c("lubridate"))
+#library(lubridate)
 
 #Standardizing date and time with lubridate package----
 
@@ -176,26 +177,46 @@ datW$wind.speedQ1<- ifelse(datW$precipitation>=2 & datW$lightning.acvitivy>0, NA
 #assert function to see if the values with precip greater than 2 and lightning 
 #activity greater than 2 were taken out
 #data in wind speed Q1 falsely matches up with any data that has precip >2 and 
-#lightning activity>0, so it is a poitive false statement to see if our data
+#lightning activity>0, so it is a positive false statement to see if our data
 #made the right distinctions
 assert(datW$wind.speedQ1==(datW$precipitation>2 & datW$lightning.acvitivy>0),
        "Data does not have precip greater than 2 or lightning greater than 0")
 
-#**Question 7: REVIST NEEDS REVISING----
+#Question 7: Checking Soil moisture and temp for invalid data----
 
-#mid july weather station was tampered with, soil moisture and temp sensor were
+#mid July weather station was tampered with, soil moisture and temp sensor were
 #out of commission
+
+#potting precip to see when it rained to compare with soil moisture
+#plot with precip and air temp marked
+#make it empty to start and then add in features 
+plot(datW$DD, ylim = c(0,25), xlab = "Day of the Year", xlim = c(182,195), 
+     ylab = "Precip and Air Temp", type = "n")
+
+#plot precip points only when there is precip
+#points are semi-transparent
+
+points(datW$DD[datW$precipitation>0], datW$precipitation[datW$precipitation>0],
+       col=rgb(95/255,158/255,160/255,.5), pch=15)
+
+
+#plot air temp
+points(datW$DD, datW$air.tempQ1,
+       col="tomato3", pch=15)
+
 #plotting soil temp and moisture
+
 
 #plot with filled in points
 #line lines
 #soil moisture
-plot(datW$doy[182:207], datW$soil.moisture[datW$doy[182:207]], pch=19, type = "b", 
+plot(datW$doy, datW$soil.moisture, pch=19, type = "b", xlim = c(182,195),
      xlab = "Day of the Year",
      ylab = "Soil Moisture (cm3 water per cm3 soil")
 
 #soil temp
-plot(datW$doy[182:207], datW$soil.temp[datW$doy[182:207]], pch=19, type = "b", xlab = "Day of the Year",
+plot(datW$doy, datW$soil.temp, pch=19, type = "b",xlim = c(182,195), 
+     xlab = "Day of the Year",
      ylab = "Soil Temp (C)")
 
 #Question 8: Avg and Total table with decimal consideration----
@@ -244,7 +265,7 @@ length(datW$wind.speedQ1)
 length(which(is.na(datW$wind.speedQ1)))
 #13 NA in observations
 
-#**Question 9: Trends in Data**NEEDS REVISING----
+#Question 9: Trends in Data
 #Plotting Soil Moisture, Air&Soil Temp, and precip 
 
 #soil moisture ***REVISE TO REFLECT NA FROM Q7

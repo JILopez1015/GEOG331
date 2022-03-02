@@ -190,7 +190,7 @@ new.t3<-table3 %>% separate(rate, into=c("cases", "population"),
 
 #Table 5
 table5
-#seperating columns----
+#separating columns----
 new.t5<-table5 %>% separate(rate, into=c("cases", "population"), 
                             sep = "/", convert = TRUE)
 

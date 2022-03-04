@@ -16,13 +16,6 @@ assert <- function(statement,err.message){
 #evaluate a false statement
 assert(1 == 2, "error: unequal values")
 
-#evaluate a true statement
-assert(2 == 2, "error: unequal values")
-#set up assert to check if two vectors are the same length
-a <- c(1,2,3,4)
-b <- c(8,4,5)
-assert(length(a) == length(b), "error: unequal length")
-
 #Read in the data file----
 #first 3 rows are additional column info so we are reading in file to not treat
 #that description as a character or factor
@@ -54,8 +47,8 @@ print(datW[1,])
 
 #installing lubridate package----
 
-#install.packages(c("lubridate"))
-#library(lubridate)
+install.packages(c("lubridate"))
+library(lubridate)
 
 #Standardizing date and time with lubridate package----
 
@@ -157,7 +150,7 @@ points(datW$DD[datW$precipitation>0], datW$precipitation[datW$precipitation>0],
 
 points(datW$DD[lightscale>0], lightscale[lightscale>0], col="tomato3", pch=19)
 
-#question 5----
+#Question 5----
 assert(length(lightscale)==length(datW$precipitation), "Error: unequal length")
 
 #Filtering out storms in wind and air temp measurements----
@@ -168,19 +161,30 @@ assert(length(lightscale)==length(datW$precipitation), "Error: unequal length")
 datW$air.tempQ2<- ifelse(datW$precipitation>=2 & datW$lightning.acvitivy>0, NA,
                          ifelse(datW$precipitation>5, NA, datW$air.tempQ1))
 
-#question 6----
+#Question 6----
 
 #taking out values where wind speed could have been effected by storms with excess
 #precip 
 datW$wind.speedQ1<- ifelse(datW$precipitation>=2 & datW$lightning.acvitivy>0, NA,
                            ifelse(datW$precipitation>5, NA, datW$wind.speed))
-#assert function to see if the values with precip greater than 2 and lightning 
-#activity greater than 2 were taken out
-#data in wind speed Q1 falsely matches up with any data that has precip >2 and 
-#lightning activity>0, so it is a positive false statement to see if our data
-#made the right distinctions
-assert(datW$wind.speedQ1==(datW$precipitation>2 & datW$lightning.acvitivy>0),
-       "Data does not have precip greater than 2 or lightning greater than 0")
+
+#gathering where NA's are in data for wind speed
+W2.NA<-which(is.na(datW$wind.speedQ1))
+
+#view W2.NA
+W2.NA
+
+#NA's are in W2.NA, so we are going to assert if this column really does have NA
+#I checked 67 and it was NA so we are checking the rest to see if they are all NA
+#if false then there is not an NA and needs to be reconsidered
+
+#replace nuber with any of the W2.NA values
+assert(is.na(W2.NA[1658]==TRUE), "Row does not contain NA")
+
+#plotting new/filtered wind data
+plot(datW$doy, datW$wind.speedQ1, pch=19, type = "b",
+     xlab = "Day of the Year",
+     ylab = "Wind Speed (m/s)")
 
 #Question 7: Checking Soil moisture and temp for invalid data----
 
@@ -221,11 +225,13 @@ plot(datW$doy, datW$soil.temp, pch=19, type = "b",xlim = c(182,195),
 
 #Question 8: Avg and Total table with decimal consideration----
 
-#average air temp, wind speed, soil moisture, and soil temp to appropriate decimals
+#average air temp, wind speed, soil moisture, and soil temp 
+#to appropriate decimals, respectively 
 airtemp.avg<-format(round((mean(datW$air.tempQ2, na.rm=TRUE)), 1), nsmall=1)
 windspeed.avg<-format(round((mean(datW$wind.speedQ1, na.rm=TRUE)), 2), nsmall=2)
 soilmoist.avg<-format(round((mean(datW$soil.moisture, na.rm=TRUE)), 7), nsmall=7)
 soiltemp.avg<-format(round((mean(datW$soil.temp, na.rm=TRUE)), 2), nsmall=2)
+
 
 #total precip to 3 decimals
 precip.total<-format(round((sum(datW$precipitation)),3), nsmall=3)
@@ -265,20 +271,20 @@ length(datW$wind.speedQ1)
 length(which(is.na(datW$wind.speedQ1)))
 #13 NA in observations
 
-#Question 9: Trends in Data
+#Question 9: Trends in Data----
 #Plotting Soil Moisture, Air&Soil Temp, and precip 
 
-#soil moisture ***REVISE TO REFLECT NA FROM Q7
+#soil moisture plot
 plot(datW$DD, datW$soil.moisture, pch=19, type = "b", xlab = "Day of the Year",
      ylab = "Soil Moisture (cm3 water per cm3 soil", 
      main = "Soil Moisture for June-July 2018")
 
-#air temp
+#air temp plot
 plot(datW$DD, datW$air.tempQ2, pch=19, type = "b", xlab = "Day of the Year",
      ylab = "Air Temp (C)"
      ,main = "Air Temperature for June-July 2018")
 
-#hist of air temp
+#histogram of air temp
 hist(datW$air.tempQ2,
      freq=FALSE,
      main = "Air Temperature for June-July 2018",
@@ -287,7 +293,7 @@ hist(datW$air.tempQ2,
      col="grey50",
      border="white")
 
-#soil temp***REVISE TO REFLECT NA FROM Q7
+#soil temp plot
 plot(datW$DD, datW$soil.temp, pch=19, type = "b", xlab = "Day of the Year",
      ylab = "Soil Temp (C)", main = "Soil Temperature for June-July 2018")
 
@@ -312,5 +318,6 @@ hist(datW$precipitation,
      ,ylab="Relative frequency",
      col="grey50",
      border="white")
+
 
 

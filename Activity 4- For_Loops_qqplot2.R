@@ -29,7 +29,8 @@ iris.versi<-iris %>% filter(Species=="versicolor")
 
 # hint: consider using a list, and also new vectors for regression variables
 
-lm()
+iris.versi %>% lm(formla= Sepal.Length~Sepal.Width)
+
 
 #####################################
 ##### Part 2: data in dplyr     #####

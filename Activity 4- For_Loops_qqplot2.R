@@ -20,8 +20,6 @@ library(ggplot2)
 
 View(iris)
 
-##extracting versicolor
-iris.versi<-iris %>% filter(Species=="versicolor")
 
 #1. iris  sepal length x width
 #2. iris  petal length x width
@@ -31,6 +29,18 @@ iris.versi<-iris %>% filter(Species=="versicolor")
 #just do this 3 times in for loop
 lm(data= iris.versi, formula= Sepal.Length~Sepal.Width)
 
+##extracting versicolor
+iris.versi<-iris %>% filter(Species=="versicolor")
+###help online: https://statisticsglobe.com/r-multiple-regressions-in-for-loop
+#create empty list
+versi_summary<-list()
+
+for(i in 2:ncol(iris.versi)) {                 
+  versi_i <- colnames(iris.versi)[2:i]   
+  versi_list[[i - 1]] <- 
+    summary(    
+    lm(y ~ ., iris.versi[ , c("y", versi_i)]))
+}
 
 #####################################
 ##### Part 2: data in dplyr     #####
@@ -64,3 +74,26 @@ plot(iris$Sepal.Length,iris$Sepal.Width)
 ##### arguments differ between  #####
 ##### plot and ggplot?          #####
 #####################################		
+  
+  
+  
+  
+####trash code
+  #creating empty list
+  #versi.lists<-list()
+  
+  #making loop for making lists
+  #for(i in 1:ncol(iris.versi)){
+  #  versi.lists[[i]]<- iris.versi[,i]}
+  
+  #making loop for making lists
+  #for(i in 1:ncol(iris.versi)){
+  #versi.lists[[i]]<- summary(lm(data=versi.lists, formula =() ))
+  
+  #instructions
+  #https://intro2r.com/loops.html
+  
+  #making loop for regressions
+  #for(i in 1:(ncol(versi.lists)){versilm[[i]]<-lm()}
+  
+  

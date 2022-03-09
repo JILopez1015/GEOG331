@@ -28,8 +28,8 @@ iris.versi<-iris %>% filter(Species=="versicolor")
 #3. iris sepal length x petal length
 
 # hint: consider using a list, and also new vectors for regression variables
-
-iris.versi %>% lm(formla= Sepal.Length~Sepal.Width)
+#just do this 3 times in for loop
+lm(data= iris.versi, formula= Sepal.Length~Sepal.Width)
 
 
 #####################################

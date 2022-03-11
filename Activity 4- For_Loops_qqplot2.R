@@ -28,33 +28,28 @@ View(iris)
 
 # hint: consider using a list, and also new vectors for regression variables
 #just do this 3 times in for loop
-lm(data= iris.versi, formula= Sepal.Length~Sepal.Width)
 
 ##extracting versicolor
 iris.versi<-iris %>% filter(Species=="versicolor")
-###help online: https://statisticsglobe.com/r-multiple-regressions-in-for-loop
-#create lists
-a<-list(iris.versi$Sepal.Length)
-b<-list(iris.versi$Sepal.Width)
-c<-list(iris.versi$Petal.Length)
-d<-list(iris.versi$Petal.Width)
 
-#empty list
-versi.lists<-list()
-#making loop for making lists
-for(i in 1:ncol(iris.versi)){
-  versi.lists[[i]]<- iris.versi[,i]}
+#making lists for x and y variables of regressions
+##just saying which columns: 1,3,1
+versi.x<- c(1,3,1)
 
-#list is versi.lists
+##just saying which columns: 2,4,3
+versi.y<- c(2,4,3)
 
-#creating regression loop
+#defining versi.summ as list with 0 
+versi.summ<-list(0)
   
-for (r in 1:3) {iris.summ[r]<- lm(iris)
-  
-  
-}
-  
-#lm(formula = versi.lists[1]~versi.lists[2])
+#making loop for regression
+#made reference with which columns to use (versi.x+.y) but added the data frame to 
+#reference at the beginning so it can reference specific columns I want
+
+for (i in 1:3) { versi.summ[[i]]<- 
+  lm(iris.versi[,versi.y[i]]~iris.versi[,versi.x[i]])  #using the comma before 
+}                                     #versi.x[i] to say that I want to compare 
+                                      #those columns, not the same as subsetting
   
 
 #####################################
@@ -107,25 +102,5 @@ iris.3c + geom_point(aes(color=Species, shape=Species, size=Petal.Length)) +
 
 
 
-
- 
-  
-####trash code
-  #creating empty list
-  #versi.lists<-list()
-  
-  #making loop for making lists
-  #for(i in 1:ncol(iris.versi)){
-  #  versi.lists[[i]]<- iris.versi[,i]}
-  
-  #making loop for making lists
-  #for(i in 1:ncol(iris.versi)){
-  #versi.lists[[i]]<- summary(lm(data=versi.lists, formula =() ))
-  
-  #instructions
-  #https://intro2r.com/loops.html
-  
-  #making loop for regressions
-  #for(i in 1:(ncol(versi.lists)){versilm[[i]]<-lm()}
   
   

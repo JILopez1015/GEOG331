@@ -1,5 +1,5 @@
-### Activity #4
-##JL 3/23/2022
+### Activity #5
+##JL 3/31/2022
 
 #load in lubridate
 library(lubridate)
@@ -22,6 +22,9 @@ head(datP)
 ##stream flow data
 datD<- datH[datH$discharge.flag == "A",]
 
+####Variables for Precip and discharge
+precip <- datP$HPCP
+disch <- datD$discharge
 #### define time for streamflow #####
 #convert date and time
 datesD <- as.Date(datD$date, "%m/%d/%Y")
@@ -57,6 +60,46 @@ datP$decDay <- datP$doy + (datP$hour/24)
 datP$decYear <- ifelse(leap_year(datP$year),datP$year + (datP$decDay/366),
                        datP$year + (datP$decDay/365))
 
-####plot discharge
+####plot discharge####
 plot(datD$decYear, datD$discharge, type="l", xlab="Year",
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
+
+##PLOTTING FREQ WITH HISTOGRAMS####
+
+histP<- hist(precip)
+
+histD <- hist(disch)
+
+#Average daily discharge across all years####
+aveF <- aggregate(disch, by=list(datD$doy), FUN="mean")
+colnames(aveF) <- c("doy","dailyAve")
+
+sdF <- aggregate(datD$discharge, by=list(datD$doy), FUN="sd")
+colnames(sdF) <- c("doy","dailySD")
+
+#start new plot
+dev.new(width=8,height=8)
+
+#bigger margins
+par(mai=c(1,1,1,1))
+
+#make plot
+plot(aveF$doy,aveF$dailyAve,
+     type="l",
+     xlab="Year",
+     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")),
+     lwd=2,
+     ylim=c(0,90),
+     xaxs="i", yaxs ="i",#remove gaps from axes
+     axes=FALSE)#no axes
+polygon(c(aveF$doy, rev(aveF$doy)),#x coordinates
+        c(aveF$dailyAve-sdF$dailySD,rev(aveF$dailyAve+sdF$dailySD)),#ycoord
+        col=rgb(0.392, 0.584, 0.929,.2), #color that is semi-transparent
+        border=NA#no border
+)
+axis(1, seq(0,360, by=40), #tick intervals
+     lab=seq(0,360, by=40)) #tick labels
+axis(2, seq(0,80, by=20),
+     seq(0,80, by=20),
+     las = 2)#show ticks at 90 degree angle
+

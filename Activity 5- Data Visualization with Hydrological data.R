@@ -172,7 +172,8 @@ axis(2, seq(0,80, by=20),
      seq(0,80, by=20),
      las = 2)#show ticks at 90 degree angle
 
-#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS   #################
+#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS  ***scrapping   #################
+
 #extracting all summer months since we do not have temp
 ##summer is June to September
 P.summer <- datP %>% filter(month==c("6","7","8","9"))
@@ -180,7 +181,7 @@ P.summer <- datP %>% filter(month==c("6","7","8","9"))
 
 ##df of doy and hour
 
-d.h.df <- tibble(P.summer[,c(7,6,5)])
+d.h.df <- tibble(P.summer[,c(8,6,5)])
 view(d.h.df)
 
 ##count indicates which days had less than 24 hrs of precip measurements
@@ -232,14 +233,19 @@ legend("topleft", c("Mean","Days with 24hr precip"), #legend items
        bty="n"))#no legend border; might have to run whole plot again to avoid
        #past legend showing up
 
+#####  New attempt with for loop     Q7             #######
+#empty list
+
+#run through each row and print only the ones that have 
+#values of hours between and equal to 0-24
+
 #####  HYDROGRAPHS  ######################
 
 #subsest discharge and precipitation within range of interest
 ##using 2007 with DOY=252 and 258
-hydroD.2 <- datD[datD$doy >= 169 & datD$doy < 270 & datD$year == 2007,]
-hydroP.2 <- datP[datP$doy >= 160 & datP$doy < 270 & datP$year == 2007,]
 
-
+hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
+hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
 
 ##scaling precip values
 #get minimum and maximum range of discharge to plot
@@ -287,15 +293,38 @@ legend("topright", c("Discharge","Precip"), #legend items
   
 #####  Q8: My Hydrograph   ############################
 
+##extracting winter months
+P.winter <- datP %>% filter(month==c("12","1","2","3"))
 
+
+##df of doy and hour
+
+#extracting the doy, year, and hours
+pw.h.df <- tibble(P.winter[,c(7,6,5)])
+view(pw.h.df)
+
+##count indicates which days had less than 24 hrs of precip measurements
+#counts less than 5 do not cover full day
+count.hr<- d.h.df %>% count(year,doy, sort=TRUE)
+
+param <-ifelse(count.hr$n >=5,
+               paste(count.hr$doy,count.hr$year),"0")
+param[1:10] ##doy and year that have 24 hr precip
+
+
+
+
+#subsest discharge and precipitation within range of interest
+##using 2007 with DOY=169 and 270
+hydroD.2 <- datD[datD$doy >= 169 & datD$doy < 270 & datD$year == 2009,]
+hydroP.2 <- datP[datP$doy >= 169 & datP$doy < 270 & datP$year == 2009,]
 
 
 
 
 
 #subsest discharge and precipitation within range of interest
-hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
-hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
+
 
 #minimun, if great than 0 than no reason to include 0 value
 min(hydroD$discharge)

@@ -1,26 +1,26 @@
 ### Activity #5
 ##JL 4/1/2022
 
-#####  load in packages####
+#####  load in packages   ####
 library(lubridate)
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
 
-#####  reading in stream flow data######----
+#####  reading in stream flow data   ######----
 datH<- read.csv("Z://data/streamflow/stream_flow_data.csv",
                 na.strings = c("Eqp"))
 head(datH)
 
 
-#####  reading in Precipitation (precip) data###----
+#####  reading in precip data   #############
 datP<-read.csv("Z://data/streamflow/2049867.csv")
 
 ##hourly precip is in mm
 
 head(datP)
 
-#####  Only using the most reliable measurements (flagged as A by USGS)####----
+#####  Only using the most reliable measurements (flagged as A by USGS)   #########
 #A was flagged as Approved for publication
 ##stream flow data
 datD<- datH[datH$discharge.flag == "A",]
@@ -28,7 +28,7 @@ datD<- datH[datH$discharge.flag == "A",]
 ####Variables for Precip and discharge
 precip <- datP$HPCP
 disch <- datD$discharge
-#####  define time for streamflow #####
+#####  define time for streamflow   #####
 #convert date and time
 datesD <- as.Date(datD$date, "%m/%d/%Y")
 #get day of year
@@ -40,7 +40,7 @@ timesD <- hm(datD$time)
 #defining month
 datD$month<-month(datesD)
 
-#####  define time for precipitation #####
+#####  define time for precipitation   #####
 dateP <- ymd_hm(datP$DATE)
 #get day of year
 datP$doy <- yday(dateP)
@@ -49,7 +49,7 @@ datP$year <- year(dateP)
 #get month
 datP$month <- month(dateP)
 
-#####  get decimal formats #####
+#####  get decimal formats   #####
 #convert time from a string to a more usable format
 #with a decimal hour
 datD$hour <- hour(timesD ) + (minute(timesD )/60)
@@ -67,17 +67,17 @@ datP$decDay <- datP$doy + (datP$hour/24)
 datP$decYear <- ifelse(leap_year(datP$year),datP$year + (datP$decDay/366),
                        datP$year + (datP$decDay/365))
 
-#####  plot discharge####
+#####  plot discharge   ####
 plot(datD$decYear, datD$discharge, type="l", xlab="Year",
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
 
-#####  PLOTTING FREQ WITH HISTOGRAMS####
+#####  PLOTTING FREQ WITH HISTOGRAMS   ####
 
 histP<- hist(precip)
 
 histD <- hist(disch)
 
-#####  Average daily discharge across all years####
+#####  Average daily discharge across all years   ####
 aveF <- aggregate(datD$discharge, by=list(datD$doy), FUN="mean")
 colnames(aveF) <- c("doy","dailyAve")
 sdF <- aggregate(datD$discharge, by=list(datD$doy), FUN="sd")
@@ -95,7 +95,7 @@ colnames(aveF.2) <- c("Day","dailyAve")
 sdf.2<-aggregate(disch.17$discharge, by=list(disch.17$doy), FUN="sd")
 colnames(sdf.2) <- c("doy","dailySD")
 
-#####  Q5 PLOTTED WITH 2017 DATA###########################
+#####  Q5 PLOTTED WITH 2017 DATA   ###########################
 #start new plot
 dev.new(width=8,height=8)
 
@@ -138,7 +138,7 @@ legend("topright", c("overall mean","2017 mean","1 standard deviation"), #legend
        x.intersp = 5 )
 
 
-#####  Q6 PLOTTED MEDIAN TO SEE DIFFERENCE###########################
+#####  Q6 PLOTTED MEDIAN TO SEE DIFFERENCE   ###########################
 
 ##calculating median
 med.2017 <- aggregate(disch.17$discharge, by=list(disch.17$doy), FUN="median")
@@ -172,7 +172,7 @@ axis(2, seq(0,80, by=20),
      seq(0,80, by=20),
      las = 2)#show ticks at 90 degree angle
 
-#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS#################
+#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS   #################
 #extracting all summer months since we do not have temp
 ##summer is June to September
 P.summer <- datP %>% filter(month==c("6","7","8","9"))
@@ -232,7 +232,7 @@ legend("topleft", c("Mean","Days with 24hr precip"), #legend items
        bty="n"))#no legend border; might have to run whole plot again to avoid
        #past legend showing up
 
-#####  HYDROGRAPHS######################
+#####  HYDROGRAPHS  ######################
 
 #subsest discharge and precipitation within range of interest
 hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
@@ -276,13 +276,16 @@ for(i in 1:nrow(hydroP)){
                   hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
                 c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
                 col=rgb(0.392, 0.584, 0.929,.2), border=NA)}
-        
 
-
-
-
-
-##########
+#adding legend to plot
+legend("topright", c("Discharge","Precip"), #legend items
+       lwd=c(2,NA),#lines
+       col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
+             pch=c(NA,15),
+             bty="n")#no legend border; might have to run whole plot again to avoid
+#past legend showing up
+  
+#####  Q8: My Hydrograph   ############################
 
 
 

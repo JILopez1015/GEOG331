@@ -67,10 +67,6 @@ datP$decDay <- datP$doy + (datP$hour/24)
 datP$decYear <- ifelse(leap_year(datP$year),datP$year + (datP$decDay/366),
                        datP$year + (datP$decDay/365))
 
-#####  plot discharge   ####
-plot(datD$decYear, datD$discharge, type="l", xlab="Year",
-     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
-
 #####  PLOTTING FREQ WITH HISTOGRAMS   ####
 
 histP<- hist(precip)
@@ -96,6 +92,10 @@ sdf.2<-aggregate(disch.17$discharge, by=list(disch.17$doy), FUN="sd")
 colnames(sdf.2) <- c("doy","dailySD")
 
 #####  Q5 PLOTTED WITH 2017 DATA   ###########################
+##labels
+months<- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept",
+"Oct","Nov","Dec","")
+
 #start new plot
 dev.new(width=8,height=8)
 
@@ -106,6 +106,7 @@ par(mai=c(1,1,1,1))
 plot(aveF$doy,aveF$dailyAve,
      type="l",
      xlab="Year",
+     xlim=c(0,400),
      ylab="",
      lwd=2,
      ylim=c(0,90),
@@ -118,13 +119,13 @@ polygon(c(aveF$doy, rev(aveF$doy)),#x coordinates
         border=NA#no border
 ) 
 
-lines(aveF.2[,2],col="red")
+#lines(aveF.2[,2],col="red")
 #mtext to move ylab down
 mtext(expression(paste("Discharge ft"^"3 ","sec"^"-1")), side=2, at=25, line=2)
       
 #axis ticks      
-axis(1, seq(0,400, by=50), #tick intervals
-     lab=seq(0,400, by=50)) #tick labels
+axis(1, seq(0,400, by=33), #tick intervals
+     lab=months) #tick labels
 axis(2, seq(0,80, by=20),
      seq(0,80, by=20),
      las = 2)#show ticks at 90 degree angle
@@ -239,7 +240,7 @@ legend("topleft", c("Mean","Days with 24hr precip"), #legend items
 #run through each row and print only the ones that have 
 #values of hours between and equal to 0-24
 
-#####  HYDROGRAPHS  ######################
+#####  HYDRO GRAPHS  ######################
 
 #subsest discharge and precipitation within range of interest
 ##using 2007 with DOY=252 and 258
@@ -291,36 +292,19 @@ legend("topright", c("Discharge","Precip"), #legend items
              bty="n")#no legend border; might have to run whole plot again to avoid
 #past legend showing up
   
-#####  Q8: My Hydrograph   ############################
+#####  Q8: My Hydro graph   ############################
 
 ##extracting winter months
 P.winter <- datP %>% filter(month==c("12","1","2","3"))
 
 
-##df of doy and hour
-
-#extracting the doy, year, and hours
-pw.h.df <- tibble(P.winter[,c(7,6,5)])
-view(pw.h.df)
-
-##count indicates which days had less than 24 hrs of precip measurements
-#counts less than 5 do not cover full day
-count.hr<- d.h.df %>% count(year,doy, sort=TRUE)
-
-param <-ifelse(count.hr$n >=5,
-               paste(count.hr$doy,count.hr$year),"0")
-param[1:10] ##doy and year that have 24 hr precip
-
-
+##get days with all 24 hr observations
 
 
 #subsest discharge and precipitation within range of interest
 ##using 2007 with DOY=169 and 270
 hydroD.2 <- datD[datD$doy >= 169 & datD$doy < 270 & datD$year == 2009,]
 hydroP.2 <- datP[datP$doy >= 169 & datP$doy < 270 & datP$year == 2009,]
-
-
-
 
 
 #subsest discharge and precipitation within range of interest
@@ -372,3 +356,77 @@ legend("topright", c("Discharge","Precip"), #legend items
        pch=c(NA,15),
        bty="n")#no legend border; might have to run whole plot again to avoid
 #past legend showing up
+
+#####  Q9: CREATING VIOLIN PLOT FOR 2016 AND 2017   ####
+
+## adding column with seasons as doy
+## winter= 12,1,2
+## spring= 3,4,5 (doy=61-151)
+## summer= 6,7,8(152-243)
+## fall= 9,10,11 (244-334)
+x<-datD$doy
+
+datD$Season<-ifelse(x>=61 & x<=151 ,"Spring",
+                    ifelse(x>=152 & x<=243 , "Summer",
+                           ifelse(x>=244 & x<=334 ,"Fall","Winter")))
+
+##filtering out data from 2016 and 2017
+ds16<-datD %>% filter(year== "2016")
+ds17<-datD %>% filter(year == "2017")
+
+#start new plot
+dev.new(width=8,height=8)
+
+#bigger margins
+par(mai=c(1,1,1,1))
+
+###violiin plot of 2016 discharge
+ggplot(data= ds16, aes(Season,discharge)) +
+  geom_violin() +
+  xlab("Season") +  ylab(expression(paste("Discharge ft"^"3 ","sec"^"-1"))) +
+  ggtitle("2016 Season Discharge")+ 
+  theme_classic()
+
+#start new plot 2017 discharge
+dev.new(width=8,height=8)
+
+#bigger margins
+par(mai=c(1,1,1,1))  
+ggplot(data= ds17, aes(Season,discharge)) +
+  geom_violin() +
+  xlab("Season") +  ylab(expression(paste("Discharge ft"^"3 ","sec"^"-1"))) +
+  ggtitle("2017 Seasonal Discharge")+ 
+  theme_classic()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

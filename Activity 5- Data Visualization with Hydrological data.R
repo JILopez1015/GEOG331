@@ -235,13 +235,13 @@ legend("topleft", c("Mean","Days with 24hr precip"), #legend items
 #####  HYDROGRAPHS  ######################
 
 #subsest discharge and precipitation within range of interest
-hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
-hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
+##using 2007 with DOY=252 and 258
+hydroD.2 <- datD[datD$doy >= 169 & datD$doy < 270 & datD$year == 2007,]
+hydroP.2 <- datP[datP$doy >= 160 & datP$doy < 270 & datP$year == 2007,]
 
-#minimun, if great than 0 than no reason to include 0 value
-min(hydroD$discharge)
 
-##sclaing precip values
+
+##scaling precip values
 #get minimum and maximum range of discharge to plot
 #go outside of the range so that it's easy to see high/low values
 #floor rounds down the integer
@@ -289,3 +289,57 @@ legend("topright", c("Discharge","Precip"), #legend items
 
 
 
+
+
+
+
+#subsest discharge and precipitation within range of interest
+hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
+hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
+
+#minimun, if great than 0 than no reason to include 0 value
+min(hydroD$discharge)
+
+##sclaing precip values
+#get minimum and maximum range of discharge to plot
+#go outside of the range so that it's easy to see high/low values
+#floor rounds down the integer
+yl <- floor(min(hydroD$discharge))-1
+#ceiling rounds up to the integer
+yh <- ceiling(max(hydroD$discharge))+1
+#minimum and maximum range of precipitation to plot
+pl <- 0
+pm <- ceiling(max(hydroP$HPCP))+.5
+#scale precipitation to fit on the
+hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
+
+###plotting discharge and precip
+
+#start new plot
+dev.new(width=8,height=8)
+
+#adding size
+par(mai=c(1,1,1,1))
+#make plot of discharge
+plot(hydroD$decDay,
+     hydroD$discharge,
+     type="l",
+     ylim=c(yl,yh),
+     lwd=2,
+     xlab="Day of year",
+     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
+
+#add bars to indicate precipitation
+for(i in 1:nrow(hydroP)){
+  polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
+            hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
+          c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
+          col=rgb(0.392, 0.584, 0.929,.2), border=NA)}
+
+#adding legend to plot
+legend("topright", c("Discharge","Precip"), #legend items
+       lwd=c(2,NA),#lines
+       col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
+       pch=c(NA,15),
+       bty="n")#no legend border; might have to run whole plot again to avoid
+#past legend showing up

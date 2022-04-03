@@ -173,39 +173,44 @@ axis(2, seq(0,80, by=20),
      seq(0,80, by=20),
      las = 2)#show ticks at 90 degree angle
 
-#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS  ***scrapping   #################
+#####  Q7: DAYS WITH 24 HR PRECIP MEASUREMENTS+PLOTS   #################
 
-#extracting all summer months since we do not have temp
-##summer is June to September
-P.summer <- datP %>% filter(month==c("6","7","8","9"))
+##piping filtering out each year and then grouping by day and 
+#then counting number of days, days with count of 24 have 24hrs worth of data
+dh.7 <- datP %>% filter(year == 2007)%>% group_by(doy) %>% summarize(n())
 
+dh.8 <-  datP %>% filter(year == 2008)%>% group_by(doy) %>% summarize(n())
 
-##df of doy and hour
+dh.9 <-  datP %>% filter(year == 2009)%>% group_by(doy) %>% summarize(n())
 
-d.h.df <- tibble(P.summer[,c(8,6,5)])
-view(d.h.df)
+dh.10 <-  datP %>% filter(year == 2010) %>% group_by(doy) %>% summarize(n())
 
-##count indicates which days had less than 24 hrs of precip measurements
-#counts less than 5 do not cover full day
-count.hr<- d.h.df %>% count(year,doy, sort=TRUE)
+dh.11 <-  datP %>% filter(year == 2011) %>% group_by(doy) %>% summarize(n())
 
-param <-ifelse(count.hr$n >=5,
-               paste(count.hr$doy,count.hr$year),"0")
-param[1:10] ##doy and year that have 24 hr precip
+dh.12 <-  datP %>% filter(year == 2012) %>% group_by(doy) %>% summarize(n())
 
+dh.13 <-  datP %>% filter(year == 2013) %>% group_by(doy) %>% summarize(n())
 
-##plotting discharge and days with full precip measurements
+##dataframe for days with 24 hr data, year and date
+df.p.twtyfr <- data.frame(x=as.factor(c(paste("2007", which(dh.7$`n()`==24)),
+  paste("2008", which(dh.7$`n()`==24)),
+  paste("2009", which(dh.7$`n()`==24)),
+  paste("2010", which(dh.7$`n()`==24)),
+  paste("2011", which(dh.7$`n()`==24)),
+  paste("2012", which(dh.7$`n()`==24)),
+  paste("2013", which(dh.7$`n()`==24)))))%>% separate(x, c('Year','Day'))
+
 
 #start new plot
 dev.new(width=8,height=8)
 
 #bigger margins
-#par(mai=c(1,1,1,1))
+par(mai=c(1,1,1,1))
 
 #make plot
 plot(aveF$doy,aveF$dailyAve,
      type="l",
-     xlab="Year",
+     xlab="Month",
      ylab="",
      lwd=2,
      ylim=c(0,45),
@@ -213,118 +218,52 @@ plot(aveF$doy,aveF$dailyAve,
      axes=FALSE)#no axes
  
 
-abline(v=c(252,248,258,169,270,234,273,250,162,238),
+abline(v=c(df.p.twtyfr$Day),
        col="blue",
-       lty=3)
+       lty=2)
 
 #mtext to move ylab down
 mtext(expression(paste("Discharge ft"^"3 ","sec"^"-1")), side=2, at=25, line=2)
-
 #axis ticks      
-axis(1, seq(0,400, by=50), #tick intervals
-     lab=seq(0,400, by=50)) #tick labels
-axis(2, seq(0,35, by=5),
-     seq(0,35, by=5),
+axis(1, seq(0,400, by=33), #tick intervals
+     lab=months) #tick labels
+axis(2, seq(0,80, by=10),
+     seq(0,80, by=10),
      las = 2)#show ticks at 90 degree angle
 
 #adding legend to plot
-legend("topleft", c("Mean","Days with 24hr precip"), #legend items
+legend("topright", c("Mean","Days with 24hr precip"), #legend items
        lwd=c(2,1),#lines
        col=c("black","blue",#colors
        bty="n"))#no legend border; might have to run whole plot again to avoid
        #past legend showing up
 
-#####  New attempt with for loop     Q7             #######
-#empty list
-
-#run through each row and print only the ones that have 
-#values of hours between and equal to 0-24
-
-#####  HYDRO GRAPHS  ######################
-
-#subsest discharge and precipitation within range of interest
-##using 2007 with DOY=252 and 258
-
-hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
-hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
-
-##scaling precip values
-#get minimum and maximum range of discharge to plot
-#go outside of the range so that it's easy to see high/low values
-#floor rounds down the integer
-yl <- floor(min(hydroD$discharge))-1
-#ceiling rounds up to the integer
-yh <- ceiling(max(hydroD$discharge))+1
-#minimum and maximum range of precipitation to plot
-pl <- 0
-pm <- ceiling(max(hydroP$HPCP))+.5
-#scale precipitation to fit on the
-hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
-
-###plotting discharge and precip
-
-#start new plot
-dev.new(width=8,height=8)
-
-#adding size
-par(mai=c(1,1,1,1))
-#make plot of discharge
-plot(hydroD$decDay,
-     hydroD$discharge,
-     type="l",
-     ylim=c(yl,yh),
-     lwd=2,
-     xlab="Day of year",
-     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
-
-#add bars to indicate precipitation
-for(i in 1:nrow(hydroP)){
-        polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
-                  hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
-                c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
-                col=rgb(0.392, 0.584, 0.929,.2), border=NA)}
-
-#adding legend to plot
-legend("topright", c("Discharge","Precip"), #legend items
-       lwd=c(2,NA),#lines
-       col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
-             pch=c(NA,15),
-             bty="n")#no legend border; might have to run whole plot again to avoid
-#past legend showing up
-  
 #####  Q8: My Hydro graph   ############################
 
-##extracting winter months
-P.winter <- datP %>% filter(month==c("12","1","2","3"))
-
-
-##get days with all 24 hr observations
-
-
 #subsest discharge and precipitation within range of interest
-##using 2007 with DOY=169 and 270
-hydroD.2 <- datD[datD$doy >= 169 & datD$doy < 270 & datD$year == 2009,]
-hydroP.2 <- datP[datP$doy >= 169 & datP$doy < 270 & datP$year == 2009,]
+##using 2011 with DOY=37 and 42
+hydroD.2 <- datD[datD$doy >= 37 & datD$doy < 42 & datD$year == 2011,]
+hydroP.2 <- datP[datP$doy >= 37 & datP$doy < 42 & datP$year == 2011,]
 
 
 #subsest discharge and precipitation within range of interest
 
 
 #minimun, if great than 0 than no reason to include 0 value
-min(hydroD$discharge)
+min(hydroD.2$discharge)
 
 ##sclaing precip values
 #get minimum and maximum range of discharge to plot
 #go outside of the range so that it's easy to see high/low values
 #floor rounds down the integer
-yl <- floor(min(hydroD$discharge))-1
+yl.2 <- floor(min(hydroD.2$discharge))-1
 #ceiling rounds up to the integer
-yh <- ceiling(max(hydroD$discharge))+1
+yh.2<- ceiling(max(hydroD.2$discharge))+1
 #minimum and maximum range of precipitation to plot
-pl <- 0
-pm <- ceiling(max(hydroP$HPCP))+.5
+pl.2 <- 0
+pm.2 <- ceiling(max(hydroP.2$HPCP))+.5
 #scale precipitation to fit on the
-hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
+hydroP.2$pscale <- (((yh.2-yl.2)/(pm.2-pl.2)) * hydroP.2$HPCP) + yl.2
 
 ###plotting discharge and precip
 
@@ -334,19 +273,19 @@ dev.new(width=8,height=8)
 #adding size
 par(mai=c(1,1,1,1))
 #make plot of discharge
-plot(hydroD$decDay,
-     hydroD$discharge,
+plot(hydroD.2$decDay,
+     hydroD.2$discharge,
      type="l",
-     ylim=c(yl,yh),
+     ylim=c(yl.2,8.5),
      lwd=2,
      xlab="Day of year",
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
 
 #add bars to indicate precipitation
-for(i in 1:nrow(hydroP)){
-  polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
-            hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
-          c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
+for(i in 1:nrow(hydroP.2)){
+  polygon(c(hydroP.2$decDay[i]-0.017,hydroP.2$decDay[i]-0.017,
+            hydroP.2$decDay[i]+0.017,hydroP.2$decDay[i]+0.017),
+          c(yl.2,hydroP.2$pscale[i],hydroP.2$pscale[i],yl.2),
           col=rgb(0.392, 0.584, 0.929,.2), border=NA)}
 
 #adding legend to plot
@@ -355,7 +294,7 @@ legend("topright", c("Discharge","Precip"), #legend items
        col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
        pch=c(NA,15),
        bty="n")#no legend border; might have to run whole plot again to avoid
-#past legend showing up
+                #past legend showing up
 
 #####  Q9: CREATING VIOLIN PLOT FOR 2016 AND 2017   ####
 
@@ -397,12 +336,6 @@ ggplot(data= ds17, aes(Season,discharge)) +
   xlab("Season") +  ylab(expression(paste("Discharge ft"^"3 ","sec"^"-1"))) +
   ggtitle("2017 Seasonal Discharge")+ 
   theme_classic()
-
-
-
-
-
-
 
 
 

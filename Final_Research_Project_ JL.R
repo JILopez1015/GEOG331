@@ -9,6 +9,7 @@ library(ggplot2)
 library(lubridate)
 
 
+
 #####   Loading in Temp data                #####
 
 ##metadata link https://ag.arizona.edu/azmet/raw2003.htm
@@ -62,7 +63,14 @@ colnames(T21) <- c("Year", "Day of Year (DOY)","Hour of Day", "Air Temperature",
                    "Wind Speed (Ave)","Wind Vector Magnitude","Wind Vector Direction",
                    " Wind Direction Standard Deviation","Max Wind Speed",
                    "Reference Evapotranspiration (ETo)")
-#####   Loading in Electricity Demand Data  ####
+
+T18.2 <- T18[,1:4]
+T19.2 <- T19[,1:4]
+T20.2 <- T20[,1:4]
+T21.2 <- T21[,1:4]
+
+
+#####   Loading in Electricity Demand Data     ####
 
 E17 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/EIA_1.17_12.17.csv", 
                 header= TRUE, )
@@ -79,7 +87,7 @@ E20 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/EIA_1.
 E21 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/EIA_1.21_12.21.csv", 
                 header= TRUE)
 
-#####   Formatting Time on ED Data          ####
+#####   Formatting Time on ED Data             ####
 
 #convert date and time
 datesD <- as.Date(E17$Timestamp..Hour.Ending., "%m/%d/%Y")
@@ -109,6 +117,12 @@ E20$month<-month(datesD.4)
 E21$month<-month(datesD.5)
 
 
+#####   Formatting Tables to combine with EDem ####
+
+T.avg.17 <- aggregate(T17.2$`Air Temperature`, 
+                      by=list(Category=T17.2$`Day of Year (DOY)`), FUN=mean)
+
+
 #####   Histograms Temp                     #####
 
 H17 <- hist(T17[,4]  , main= "'17 Temp Distribution", xlab= "Temp")
@@ -133,5 +147,9 @@ EH20 <- hist(E20$Demand..MWh. , main= "'20 Electricity Demand", xlab= "Elec")
 
 EH21 <- hist(E21$Demand..MWh. , main= "'21 Electricity Demand", xlab= "Elec")
 
-#####   Plotting                 ####
-TE17 <- 
+#####   Plotting Temp and Elec Demand over time ####
+
+ggplot(data=T17, aes())+geom_line()
+
+
+

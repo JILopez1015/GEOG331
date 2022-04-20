@@ -63,7 +63,7 @@ colnames(T21) <- c("Year", "Day of Year (DOY)","Hour of Day", "Air Temperature",
                    "Wind Speed (Ave)","Wind Vector Magnitude","Wind Vector Direction",
                    " Wind Direction Standard Deviation","Max Wind Speed",
                    "Reference Evapotranspiration (ETo)")
-
+T17.2 <- T17[,1:4]
 T18.2 <- T18[,1:4]
 T19.2 <- T19[,1:4]
 T20.2 <- T20[,1:4]
@@ -155,6 +155,7 @@ view(datT)
 
 #checking for NA's
 which(is.na(datT), arr.ind = TRUE)
+#no NA
 
 #####   Histograms Temp                         #####
 
@@ -205,6 +206,15 @@ win.T.Ed <- plot(x= w$Demand..MWh., y= w$`Avg. Air Temp`, xlab = "Elec. Demand",
                  ylab = "Win Avg. Temp.", pch=1) 
 
 
+#control for ambient temp.
+#look for extra heat from heat dumping from AC's, how?
+#seasonally is "cool"
+#energy from whole state, representative
+#get temperature from non-urban area
+#just keep temp as indep and energy as 
+#when is temp and ac most related? heat waves?
+#predictive modeling? for energy use for future
+###get future temp to plug into my regression
 
 
 

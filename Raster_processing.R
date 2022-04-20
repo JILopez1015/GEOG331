@@ -83,6 +83,12 @@ points(gtree2, cex=gtree2$cc.pct/50, col="blue")
 dev.off()
 #to signify off for png plot
 
+#extract ndvi values for each point
+nt <- terra::extract(ndvi, gtree2, fun=mean, method='bilinear')
+
+#plot ndvi vs canopy cover
+plot(nt$ndvi, gtree2$cc.pct, pch=16, col= "blue", xlim=c(0,1))
+
 
 
 

@@ -1,6 +1,6 @@
 
 #####Raster Exercise
-##### JL 4/13/22
+##### JL 4/22/22
 
 #load terra package
 library(terra)
@@ -87,7 +87,11 @@ dev.off()
 nt <- terra::extract(ndvi, gtree2, fun=mean, method='bilinear')
 
 #plot ndvi vs canopy cover
+dev.new(8,8)
+
 plot(nt$ndvi, gtree2$cc.pct, pch=16, col= "blue", xlim=c(0,1))
+
+dev.off()
 
 
 

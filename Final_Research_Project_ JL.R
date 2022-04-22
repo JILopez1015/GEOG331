@@ -141,7 +141,7 @@ T.avg.21 <- aggregate(T21.2$`Air Temperature`,by=list
 colnames(T.avg.21) <- c("doy", "Avg. Air Temp")
 
 
-#####    Binding Data                           ####
+#####   Binding Data                            ####
 
 TED17 <- cbind(T.avg.17, E17)
 TED18 <- cbind(T.avg.18, E18)
@@ -171,40 +171,58 @@ H21 <- hist(T21[,4]  , main= "'21 Temp Distribution", xlab= "Temp")
 
 
 #####   Histogram Electricity Demand            ####
-EH17 <- hist(E17$Demand..MWh. , main= "'17 Electricity Demand", xlab= "Elec")
+
+#yearly
+EH17 <- hist( E17$Demand..MWh., main= "'17 Electricity Demand", xlab= "Elec")
+
+##testing normality of data
+shapiro.test(E17$Demand..MWh.)
 
 EH18 <- hist(E18$Demand..MWh. , main= "18 Electricity Demand", xlab= "Elec")
+shapiro.test(E18$Demand..MWh.)
 
 EH19 <- hist(E19$Demand..MWh. , main= "'19 Electricity Demand", xlab= "Elec")
+shapiro.test(E19$Demand..MWh.)
 
 EH20 <- hist(E20$Demand..MWh. , main= "'20 Electricity Demand", xlab= "Elec")
+shapiro.test(E20$Demand..MWh.)
 
 EH21 <- hist(E21$Demand..MWh. , main= "'21 Electricity Demand", xlab= "Elec")
+shapiro.test(E21$Demand..MWh.)
 
-#####   Plotting Temp and Elec Demand over time ####
+#####yearly elc. demand is not a normal distribution because the p-value is less 
+        #than .05, therefore we must reject the null hypothesis of normality
+
+
+#####   Plotting Temp and Elec Demand for 5 yrs ####
 
 #plotting all of the T and Elec.Demand data
-plot(x = datT$Demand..MWh.,y=datT$`Avg. Air Temp`,xlab = "Elec. Demand", 
-     ylab = "Avg. Temp.", pch=1)
+plot(x = datT$`Avg. Air Temp`,y=datT$Demand..MWh.,xlab = "Avg. Temp.(C)", 
+     ylab = "Elec. Demand(MWh)", 
+     main= "Electricity Demand and Avg. Yr Temp (2017-2021)", pch=1)
 
-##adding seasons to data
+#####   Adding Seasons to Data                  ####
 
 x <- datT$doy
 datT$Season<-ifelse(x>=61 & x<=151 ,"Spring",
                                 ifelse(x>=152 & x<=243 , "Summer",
                                        ifelse(x>=244 & x<=334 ,"Fall","Winter")))
-#plotting only summer data and deleting duplicate column
+#####   Plotting Seasonal Data                  ####                  
+
+# plotting only summer data and deleting duplicate column
 s<- datT[ -c(4,6) ] %>% filter(Season== "Summer")
-sum.T.Ed <- plot(x= s$Demand..MWh., y= s$`Avg. Air Temp`, xlab = "Elec. Demand (MWh)", 
-                 ylab = "Summer Avg. Temp. (C)", pch=1, 
+sum.T.Ed <- plot(x= s$`Avg. Air Temp`, y= s$Demand..MWh., xlab = "Avg. Temp. (C)", 
+                 ylab = "Elec. Demand (MWh)", pch=1, 
                  main = "Summer Avg. Temp. change and AZ Electricity Demand") 
 
 #plotting winter data 
 #plotting only summer data and deleting duplicate column
 w<- datT[ -c(4,6) ] %>% filter(Season== "Winter")
-win.T.Ed <- plot(x= w$Demand..MWh., y= w$`Avg. Air Temp`, xlab = "Elec. Demand", 
-                 ylab = "Win Avg. Temp.", pch=1) 
+win.T.Ed <- plot(x= w$`Avg. Air Temp`, y= w$Demand..MWh., xlab = "Avg. Temp.(C)", 
+                 ylab = "Elec. Demand (MWh)",
+                 main = "Winter Avg. Temp. change and AZ Electricity Demand", pch=1) 
 
+####    Notes                                   ####
 
 #control for ambient temp.
 #look for extra heat from heat dumping from AC's, how?
@@ -217,8 +235,15 @@ win.T.Ed <- plot(x= w$Demand..MWh., y= w$`Avg. Air Temp`, xlab = "Elec. Demand",
 ###get future temp to plug into my regression
 
 
+#seasonally to daily to hourly and seeing the relationship
+##how is energy demand diff at diff time scales
 
+####  Statistical Analysis of Seasonal
 
+summary(s$`Avg. Air Temp`)
+summary(s$Demand..MWh.)
+
+var
 
 
 

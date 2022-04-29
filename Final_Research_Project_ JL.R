@@ -1,6 +1,6 @@
 
 #####    Final Project #####
-#####    4/15/2021                              #####
+#####    4/29/2021                              #####
 
 #####   Loading packages                        ####
 library(dplyr)
@@ -201,6 +201,9 @@ plot(x = datT$`Avg. Air Temp`,y=datT$Demand..MWh.,xlab = "Avg. Temp.(C)",
      ylab = "Elec. Demand(MWh)", 
      main= "Electricity Demand and Avg. Yr Temp (2017-2021)", pch=1)
 
+#####   Statistical Analysis: All data ??       ####
+##how would I do a regression analysis on this data to see a 5 year trend
+
 #####   Adding Seasons to Data                  ####
 
 x <- datT$doy
@@ -215,21 +218,78 @@ sum.T.Ed <- plot(x= s$`Avg. Air Temp`, y= s$Demand..MWh., xlab = "Avg. Temp. (C)
                  ylab = "Elec. Demand (MWh)", pch=1, 
                  main = "Summer Avg. Temp. change and AZ Electricity Demand") 
 
+
+
 #plotting winter data 
 #plotting only summer data and deleting duplicate column
 w<- datT[ -c(4,6) ] %>% filter(Season== "Winter")
 win.T.Ed <- plot(x= w$`Avg. Air Temp`, y= w$Demand..MWh., xlab = "Avg. Temp.(C)", 
                  ylab = "Elec. Demand (MWh)",
                  main = "Winter Avg. Temp. change and AZ Electricity Demand", pch=1) 
+#####   Statistical Analysis: Seasonal          #####
+
+#summer data
+sT <- s$`Avg. Air Temp`
+sE <- s$Demand..MWh.
+cor(sT,sE)
+cor.test(sT,sE)
+##strong positive correlation is statistically significant because p-value is greater 
+#than 0.05, null hypothesis is 0 correlation
+s.reg <- lm(sE~sT)
+summary(s.reg)
+
+#plotting residuals
+
+plot(s.reg)
+hist(s.reg$residuals)
+##are residuals normally distributed?
+##QQ plot looks normal
+##Variance of residuals looks equal
+
+## winter 
+wT <- w$`Avg. Air Temp`
+wE <- w$Demand..MWh.
+cor(wT,wE)
+cor.test(wT,wE)
+##strong negatvie correlation is statistically significant because p-value is less  
+#than 0.05, null hypothesis is 0 correlation
+w.reg <- lm(wE~wT)
+summary(w.reg)
+
+#plotting residuals
+
+plot(w.reg) 
+
+hist(w.reg$residuals)
+
+hist(w$Demand..MWh.)
+shapiro.test(w$Demand..MWh.)
+
+w$e.dem.log <- log(w$Demand..MWh.)
+
+#---------------------                          
+######can I use this one since it has better qqplot fit
+wlE <- w$e.dem.log
+cor(wT,wlE)
+cor.test(wT,wlE)
+##strong negatvie correlation is statistically significant because p-value is less  
+#than 0.05, null hypothesis is 0 correlation
+w.reg.l <- lm(wlE~wT)
+summary(w.reg.l)
+
+#plotting residuals
+
+plot(w.reg.l) 
+
+hist(w.reg.l$residuals)
+
 
 ####    Notes                                   ####
 
-#control for ambient temp.
-#look for extra heat from heat dumping from AC's, how?
 #seasonally is "cool"
 #energy from whole state, representative
 #get temperature from non-urban area
-#just keep temp as indep and energy as 
+#just keep temp as indep (x) and energy as dep(y)
 #when is temp and ac most related? heat waves?
 #predictive modeling? for energy use for future
 ###get future temp to plug into my regression
@@ -240,10 +300,6 @@ win.T.Ed <- plot(x= w$`Avg. Air Temp`, y= w$Demand..MWh., xlab = "Avg. Temp.(C)"
 
 ####  Statistical Analysis of Seasonal
 
-summary(s$`Avg. Air Temp`)
-summary(s$Demand..MWh.)
-
-var
 
 
 

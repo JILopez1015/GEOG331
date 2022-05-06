@@ -1,6 +1,6 @@
 
 #####    Final Project #####
-#####    5/4/2022                                  #####
+#####    5/6/2022                                  #####
 
 #####   Loading packages                           ####
 library(dplyr)
@@ -422,7 +422,7 @@ quantile(s.18$`Avg. Air Temp`, 0.95)
 b.18 <- s.18$`Avg. Air Temp`
 s.18$high.temp<-ifelse(b.18>=36,"Y","N")
 
-#204-8, 217-8,  
+#204-8, 217-8  
 
 ##2019 S data ##
 
@@ -436,7 +436,7 @@ quantile(s.19$`Avg. Air Temp`, 0.95)
 b.19 <- s.19$`Avg. Air Temp`
 s.19$high.temp<-ifelse(b.19>=36,"Y","N")
 
-#208-10
+#207-10
 
 ## 2020 s data##
 
@@ -470,14 +470,28 @@ s.21$high.temp<-ifelse(b.21>=37,"Y","N")
 #extracting summer from overall 2017 data
 s.hr.17 <- T17.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
-#looking at specific days that had heat waves from s.17 data, 171-2, 175-6,188-9
-hw.17 <- filter(s.hr.17 , `Day of Year (DOY)`==c(171,172,175,176,188,189))
-
-#extracting summer from 
-s.hr.17 <- T17.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
 #looking at specific days that had heat waves from s.17 data, 171-2, 175-6,188-9
-hw.17 <- filter(s.hr.17 , `Day of Year (DOY)`==c(171,172,175,176,188,189))
+hw.17 <- filter(s.hr.17, `Day of Year (DOY)`==171|`Day of Year (DOY)` == 172|
+                  `Day of Year (DOY)` == 175|`Day of Year (DOY)` == 176|
+                  `Day of Year (DOY)` == 188|`Day of Year (DOY)` == 189)
+
+
+#extracting summer from overall 2018 data
+s.hr.18 <- T18.2 %>% filter(between(`Day of Year (DOY)`,152,243))
+
+#looking at specific days that had heat waves from s.18 data, 204-8, 217-8
+hw.18 <- filter(s.hr.17 , `Day of Year (DOY)`==204|`Day of Year (DOY)`==205|
+                  `Day of Year (DOY)`==206|`Day of Year (DOY)`==207|
+                  `Day of Year (DOY)`==208|`Day of Year (DOY)`==217|
+                  `Day of Year (DOY)`==218)
+
+#extracting summer from overall 2019
+s.hr.19 <- T19.2 %>% filter(between(`Day of Year (DOY)`,152,243))
+
+#looking at specific days that had heat waves from s.19 data,207-10
+hw.18 <- filter(s.hr.17 , `Day of Year (DOY)`==207|`Day of Year (DOY)`==208|
+                  `Day of Year (DOY)`==209|`Day of Year (DOY)`==210)
 
 
 

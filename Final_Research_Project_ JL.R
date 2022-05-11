@@ -2,7 +2,7 @@
 #####    Final Project #####
 #####    5/6/2022                                  #####
 
-#####   Loading packages                           ####
+#####   Loading packages                                     ####
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
@@ -10,7 +10,7 @@ library(lubridate)
 
 
 
-#####   Loading in Hourly Temp data                #####
+#####   Loading in Hourly Temp data                          #####
 
 ##metadata link https://ag.arizona.edu/azmet/raw2003.htm
 
@@ -71,7 +71,7 @@ T20.2 <- T20[,1:4]
 T21.2 <- T21[,1:4]
 
 
-#####   Loading in Daily Electricity Demand Data   ####
+#####   Loading in Daily Electricity Demand Data             ####
 
 E17 <- (read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/EIA_1.17_12.17.csv", 
                 header= TRUE )[-366,])
@@ -89,14 +89,47 @@ E21 <- (read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/EIA_1
                 header= TRUE)[-366,])
 
 
-#####   Loading in Hourly Electricity Demand Data  #####
+#####   Loading in Hourly Electricity Demand Data            #####
 
 #2017 hourly data: Heat Wave classification found in "Finding Heat Waves"
 E.hr.17 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/AZPS_2017_heat_wave_hourly.csv", 
                                      header= TRUE)
+ #removing MST from time column
+
+E.hr.17$Timestamp..Hour.Ending. <- gsub("MST", "", as.character(E.hr.17$Timestamp..Hour.Ending.))
+
+#2018 hourly data
+E.hr.18 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/AZPS_2018_heat_wave_hourly.csv", 
+                    header= TRUE)
+
+#removing MST from time column
+E.hr.18$Timestamp..Hour.Ending. <- gsub("MST", "", as.character(E.hr.18$Timestamp..Hour.Ending.))
+
+#2019 Hourly
+E.hr.19 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/AZPS_2019_heat_wave_hourly.csv", 
+                    header= TRUE)
+#removing MST from time column
+
+E.hr.19$Timestamp..Hour.Ending. <- gsub("MST", "", as.character(E.hr.19$Timestamp..Hour.Ending.))
 
 
-#####   Formatting Time on ED Data                 ####
+#2020 hourly
+E.hr.20 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/AZPS_2020_heat_wave_hourly.csv", 
+                    header= TRUE)
+#removing MST from time column
+
+E.hr.20$Timestamp..Hour.Ending. <- gsub("MST", "", as.character(E.hr.20$Timestamp..Hour.Ending.))
+
+
+#2021 hourly
+E.hr.21 <- read.csv("Z:\\students/jlopez/Research Project/Data/EIA_Demand_5yr/AZPS_2021_heat_wave_hourly.csv", 
+                    header= TRUE)
+
+#removing MST from time column
+
+E.hr.21$Timestamp..Hour.Ending. <- gsub("MST", "", as.character(E.hr.21$Timestamp..Hour.Ending.))
+
+#####   Formatting Time on ED Daily Data                     ####
 
 #convert date and time
 datesD <- as.Date(E17$Timestamp..Hour.Ending., "%m/%d/%Y")
@@ -105,12 +138,7 @@ datesD.3 <- as.Date(E19$Timestamp..Hour.Ending., "%m/%d/%Y")
 datesD.4 <- as.Date(E20$Timestamp..Hour.Ending., "%m/%d/%Y")
 datesD.5 <- as.Date(E21$Timestamp..Hour.Ending., "%m/%d/%Y")
 
-  #for hourly data
-# convert column to date class
-dateOnly_Ehr<- as.POSIXct(E.hr.17$Timestamp..Hour.Ending.)
-  datesE <- as.Date(E.hr.17$Timestamp..Hour.Ending., "%m/%d/%Y %I %p  %Z")
-  #I tried doing %m/%d/%Y %X/I.. 
-  
+ 
 
 #get day of year
 E17$doy <- yday(datesD)
@@ -118,9 +146,7 @@ E18$doy <- yday(datesD.2)
 E19$doy <- yday(datesD.3)
 E20$doy <- yday(datesD.4)
 E21$doy <- yday(datesD.5)
-  
-  #doy for hourly
-  E.hr.17$doy <- yday(datesE)
+
 
 #calculate year
 E17$year <- year(datesD)
@@ -129,8 +155,6 @@ E19$year <- year(datesD.3)
 E20$year <- year(datesD.4)
 E21$year <- year(datesD.5)
 
-  #year for hourly
-  E.hr.17$year <- year(datesE)
 
 
 #defining month
@@ -140,16 +164,81 @@ E19$month<-month(datesD.3)
 E20$month<-month(datesD.4)
 E21$month<-month(datesD.5)
 
-  #month for hourly
-  E.hr.17$month <- month(datesE)
+#####   Formatting Time on ED Hourly Data                    ####
+
+# convert column to date class
+
+
+datHE <- bind_rows(E.hr.17,E.hr.18,E.hr.19,E.hr.20,E.hr.21)
+  
+datesE <- as.Date(datHE$Timestamp..Hour.Ending., "%m/%d/%Y")
+
+datHE$doy <- yday(datesE)
+
+datHE$year <- year(datesE)
+
+
+
+
+datesE.18 <- as.Date(E.hr.18$Timestamp..Hour.Ending., "%m/%d/%Y")
+datesE.19 <- as.Date(E.hr.19$Timestamp..Hour.Ending., "%m/%d/%Y")
+datesE.20 <- as.Date(E.hr.20$Timestamp..Hour.Ending., "%m/%d/%Y")
+datesE.21 <- as.Date(E.hr.21$Timestamp..Hour.Ending., "%m/%d/%Y")
+
+#doy for hourly
+
+E.hr.18$doy <- yday(datesE.18)
+E.hr.19$doy <- yday(datesE.19)
+E.hr.20$doy <- yday(datesE.20)
+E.hr.21$doy <- yday(datesE.21)
+
+
+#year for hourly
+
+E.hr.18$year <- year(datesE.18)
+E.hr.19$year <- year(datesE.19)
+E.hr.20$year <- year(datesE.20)
+E.hr.21$year <- year(datesE.21)
+
+#month for hourly
+E.hr.17$month <- month(datesE)
+E.hr.18$month <- month(datesE.18)
+E.hr.19$month <- month(datesE.19)
+E.hr.20$month <- month(datesE.20)
+E.hr.21$month <- month(datesE.21)
   
   #hour for hourly
-  E.hr.17$hour <- hour(datesE)
-  
+dates<-mdy_h(E.hr.17$Timestamp..Hour.Ending.)
+dates.18<-mdy_h(E.hr.18$Timestamp..Hour.Ending.)
+dates.19<-mdy_h(E.hr.19$Timestamp..Hour.Ending.)
+dates.20<-mdy_h(E.hr.20$Timestamp..Hour.Ending.)
+dates.21<-mdy_h(E.hr.21$Timestamp..Hour.Ending.)
 
-  
+datDdates <- mdy_h(datD$time)
+datD$hod <- hour(datDdates)+(minute(datDdates)/60)
 
-#####   Formatting Hourly T to combine with EDem   ####
+#getting hour 
+E.hr.17$hour<- hour(dates)+(minute(dates)/60)
+E.hr.18$hour<- hour(dates.18)+(minute(dates.18)/60)
+E.hr.19$hour<- hour(dates.19)+(minute(dates.19)/60)
+E.hr.20$hour<- hour(dates.20)+(minute(dates.20)/60)
+E.hr.21$hour<- hour(dates.21)+(minute(dates.21)/60)
+
+e.hr.17.2 <- as.data.frame(separate(E.hr.17,col= Timestamp..Hour.Ending., into=c('date','time',"AM/PM"),sep = "^\\S*\\K\\s+" ))
+datD <- as.data.frame(separate(e.hr.17.2,col= time, into=c('hour',"locale"),sep = "^\\S*\\K\\s+" ))
+
+
+#1=am, 2=pm
+datD$AM.PM <-ifelse(datD$locale=="a.m. ",1,2)
+datD$`AM/PM` <- ifelse(datD$AM.PM==1, "AM", "PM")
+
+#time with proper formatting
+datD$time <- paste(datD$date,datD$hour, datD$`AM/PM`)
+
+                            
+                            
+                         
+#####   Formatting Hourly T to combine with EDem             ####
 
 #getting means of days from 24 hr data
 T.avg.17 <- aggregate(T17.2$`Air Temperature`, 
@@ -173,7 +262,7 @@ T.avg.21 <- aggregate(T21.2$`Air Temperature`,by=list
 colnames(T.avg.21) <- c("doy", "Avg. Air Temp")
 
 
-#####   Binding Data                               ####
+#####   Binding Data                                         ####
 
 TED17 <- cbind(T.avg.17, E17)
 TED18 <- cbind(T.avg.18, E18)
@@ -192,7 +281,7 @@ which(is.na(datT), arr.ind = TRUE)
 ##making fahrenheit from celsius
 datT$Temp.F <- ((datT$`Avg. Air Temp`)*(9/5))+32
 
-#####   Histograms Temp                            #####
+#####   Histograms Temp                                      #####
 
 H17 <- hist(T17[,4]  , main= "'17 Temp Distribution", xlab= "Temp")
 
@@ -205,7 +294,7 @@ H20 <- hist(T20[,4] , main= "'20 Temp Distribution", xlab= "Temp")
 H21 <- hist(T21[,4]  , main= "'21 Temp Distribution", xlab= "Temp")
 
 
-#####   Histogram Electricity Demand               ####
+#####   Histogram Electricity Demand                         ####
 
 #yearly
 EH17 <- hist( E17$Demand..MWh., main= "'17 Electricity Demand", xlab= "Elec")
@@ -229,20 +318,20 @@ shapiro.test(E21$Demand..MWh.)
         #than .05, therefore we must reject the null hypothesis of normality
 
 
-#####   Plotting Temp and Elec Demand for 5 yrs    ####
+#####   Plotting Temp and Elec Demand for 5 yrs              ####
 
 #plotting all of the T and Elec.Demand data
 plot(x = datT$`Avg. Air Temp`, y=datT$Demand..MWh., xlab = "Avg. Temp.(C)", 
      ylab = "Elec. Demand(MWh)", 
      main= "Electricity Demand and Avg. Yr Temp (2017-2021)", pch=1)
 
-#####   Adding Seasons to Data                     ####
+#####   Adding Seasons to Data                               ####
 
 x <- datT$doy
 datT$Season<-ifelse(x>=61 & x<=151 ,"Spring",
                                 ifelse(x>=152 & x<=243 , "Summer",
                                        ifelse(x>=244 & x<=334 ,"Fall","Winter")))
-#####   Plotting Seasonal Data                     ####                  
+#####   Plotting Seasonal Data                               ####                  
 
 # plotting only summer data and deleting duplicate column
 s<- datT[ -c(4,6) ] %>% filter(Season== "Summer")
@@ -259,7 +348,7 @@ win.T.Ed <- plot(x= w$`Avg. Air Temp`, y= w$Demand..MWh., xlab = "Avg. Temp.(C)"
                  ylab = "Elec. Demand (MWh)",
                  main = "Winter Avg. Temp. change and AZ Electricity Demand", pch=1) 
 
-#####   Statistical Analysis: Seasonal             #####
+#####   Statistical Analysis: Seasonal                       #####
 
 #summer data
 sT <- s$`Avg. Air Temp`
@@ -300,7 +389,7 @@ shapiro.test(w$Demand..MWh.)
 
 w$e.dem.log <- log(w$Demand..MWh.)
 
-#####   Yearly Plotting                            ####
+#####   Yearly Plotting                                      ####
 
 #yearly seasonal data
 ##2017 plot
@@ -333,24 +422,7 @@ plot(x = TED20$`Avg. Air Temp`, y=TED20$Demand..MWh., xlab = "Avg. Temp.(C)",
      ylab = "Elec. Demand(MWh)", 
      main= "2020 Electricity Demand and Avg. Yr Temp", pch=1)
 
-#---------------------                             
-######can I use this one since it has better qqplot fit
-wlE <- w$e.dem.log
-cor(wT,wlE)
-cor.test(wT,wlE)
-##strong negatvie correlation is statistically significant because p-value is less  
-#than 0.05, null hypothesis is 0 correlation
-w.reg.l <- lm(wlE~wT)
-summary(w.reg.l)
-
-#plotting residuals
-
-plot(w.reg.l) 
-
-hist(w.reg.l$residuals)
-
-
-#####   Notes                                      ####
+#####   Notes                                                ####
 
 #seasonally is "cool"
 #energy from whole state, representative
@@ -393,7 +465,7 @@ hist(w.reg.l$residuals)
 
 
 
-#####   Finding Heat Waves                         #####
+#####   Finding Heat Waves                                   #####
 
 #heat waves is when temp has been unusually high for 2 or more days 
 #using daily to see which days on average had higher temps
@@ -466,7 +538,7 @@ s.21$high.temp<-ifelse(b.21>=37,"Y","N")
 
 #168-71, 189-90
 
-####    Extracting Summertime Hourly Data          ####
+####    Extracting Summertime Hourly Data                    ####
 #extracting summer from overall 2017 data
 s.hr.17 <- T17.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
@@ -481,7 +553,7 @@ hw.17 <- filter(s.hr.17, `Day of Year (DOY)`==171|`Day of Year (DOY)` == 172|
 s.hr.18 <- T18.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
 #looking at specific days that had heat waves from s.18 data, 204-8, 217-8
-hw.18 <- filter(s.hr.17 , `Day of Year (DOY)`==204|`Day of Year (DOY)`==205|
+hw.18 <- filter(s.hr.18 , `Day of Year (DOY)`==204|`Day of Year (DOY)`==205|
                   `Day of Year (DOY)`==206|`Day of Year (DOY)`==207|
                   `Day of Year (DOY)`==208|`Day of Year (DOY)`==217|
                   `Day of Year (DOY)`==218)
@@ -490,8 +562,76 @@ hw.18 <- filter(s.hr.17 , `Day of Year (DOY)`==204|`Day of Year (DOY)`==205|
 s.hr.19 <- T19.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
 #looking at specific days that had heat waves from s.19 data,207-10
-hw.18 <- filter(s.hr.17 , `Day of Year (DOY)`==207|`Day of Year (DOY)`==208|
+hw.19 <- filter(s.hr.19 , `Day of Year (DOY)`==207|`Day of Year (DOY)`==208|
                   `Day of Year (DOY)`==209|`Day of Year (DOY)`==210)
+
+#extracting summer from overall 2020
+s.hr.20 <- T20.2 %>% filter(between(`Day of Year (DOY)`,152,243))
+
+#looking at specific days that had heat waves from s.20 data,193-5, 211-214, 227-8
+hw.20 <- filter(s.hr.20 , `Day of Year (DOY)`==193|`Day of Year (DOY)`==194|
+                  `Day of Year (DOY)`==195|`Day of Year (DOY)`==211|
+                  `Day of Year (DOY)`==212|`Day of Year (DOY)`==213|
+                  `Day of Year (DOY)`==214|`Day of Year (DOY)`==227|`Day of Year (DOY)`==228)
+
+#extracting summer from overall 2020
+s.hr.21 <- T21.2 %>% filter(between(`Day of Year (DOY)`,152,243))
+
+#looking at specific days that had heat waves from s.21 data, 168-71, 189-90
+hw.21 <- filter(s.hr.21 , `Day of Year (DOY)`==168|`Day of Year (DOY)`==169|
+                  `Day of Year (DOY)`==170|`Day of Year (DOY)`==171|
+                  `Day of Year (DOY)`==189|`Day of Year (DOY)`==190)
+
+#####   Filtering out days from Electricity data to match HW ####
+
+#looking at specific days that had heat waves from 17 data, 171-2, 175-6,188-9
+HE17 <- filter(E.hr.17,doy==171| doy== 172|doy == 175| doy== 176| doy== 188|
+                 doy== 189) 
+
+#looking at specific days that had heat waves from s.18 data, 204-8, 217-8
+HE18 <- filter(E.hr.18, doy==204 |doy ==205|doy==206| doy==207|doy==208|doy==217|
+                 doy==218)
+
+#looking at specific days that had heat waves from s.19 data,207-10
+HE19 <- filter(E.hr.19, doy==207 |doy ==208|doy==209| doy==210)
+
+#looking at specific days that had heat waves from s.20 data,193-5, 211-214, 227-8
+HE20 <- filter(E.hr.20, doy==193 |doy ==194|doy==195| doy==211|doy==212|doy==213|
+                 doy==214| doy==227| doy==228)
+
+#looking at specific days that had heat waves from s.21 data, 168-71, 189-90
+HE21 <- filter(E.hr.21, doy==168 |doy ==169|doy==170| doy==171|doy==189|doy==190)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

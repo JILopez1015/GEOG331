@@ -7,7 +7,8 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(lubridate)
-
+install.packages("viridis")
+library(viridis)
 
 
 #####   Loading in Hourly Temp data                          #####
@@ -168,7 +169,7 @@ E21$month<-month(datesD.5)
 
 # convert column to date class
 
-
+#all years in one df
 datHE <- bind_rows(E.hr.17,E.hr.18,E.hr.19,E.hr.20,E.hr.21)
   
 datesE <- as.Date(datHE$Timestamp..Hour.Ending., "%m/%d/%Y")
@@ -177,55 +178,11 @@ datHE$doy <- yday(datesE)
 
 datHE$year <- year(datesE)
 
+datHE$month <- month(datesE)
 
-
-
-datesE.18 <- as.Date(E.hr.18$Timestamp..Hour.Ending., "%m/%d/%Y")
-datesE.19 <- as.Date(E.hr.19$Timestamp..Hour.Ending., "%m/%d/%Y")
-datesE.20 <- as.Date(E.hr.20$Timestamp..Hour.Ending., "%m/%d/%Y")
-datesE.21 <- as.Date(E.hr.21$Timestamp..Hour.Ending., "%m/%d/%Y")
-
-#doy for hourly
-
-E.hr.18$doy <- yday(datesE.18)
-E.hr.19$doy <- yday(datesE.19)
-E.hr.20$doy <- yday(datesE.20)
-E.hr.21$doy <- yday(datesE.21)
-
-
-#year for hourly
-
-E.hr.18$year <- year(datesE.18)
-E.hr.19$year <- year(datesE.19)
-E.hr.20$year <- year(datesE.20)
-E.hr.21$year <- year(datesE.21)
-
-#month for hourly
-E.hr.17$month <- month(datesE)
-E.hr.18$month <- month(datesE.18)
-E.hr.19$month <- month(datesE.19)
-E.hr.20$month <- month(datesE.20)
-E.hr.21$month <- month(datesE.21)
-  
-  #hour for hourly
-dates<-mdy_h(E.hr.17$Timestamp..Hour.Ending.)
-dates.18<-mdy_h(E.hr.18$Timestamp..Hour.Ending.)
-dates.19<-mdy_h(E.hr.19$Timestamp..Hour.Ending.)
-dates.20<-mdy_h(E.hr.20$Timestamp..Hour.Ending.)
-dates.21<-mdy_h(E.hr.21$Timestamp..Hour.Ending.)
-
-datDdates <- mdy_h(datD$time)
-datD$hod <- hour(datDdates)+(minute(datDdates)/60)
-
-#getting hour 
-E.hr.17$hour<- hour(dates)+(minute(dates)/60)
-E.hr.18$hour<- hour(dates.18)+(minute(dates.18)/60)
-E.hr.19$hour<- hour(dates.19)+(minute(dates.19)/60)
-E.hr.20$hour<- hour(dates.20)+(minute(dates.20)/60)
-E.hr.21$hour<- hour(dates.21)+(minute(dates.21)/60)
-
-e.hr.17.2 <- as.data.frame(separate(E.hr.17,col= Timestamp..Hour.Ending., into=c('date','time',"AM/PM"),sep = "^\\S*\\K\\s+" ))
-datD <- as.data.frame(separate(e.hr.17.2,col= time, into=c('hour',"locale"),sep = "^\\S*\\K\\s+" ))
+##getting hour to proper formatting
+datHE.2 <- as.data.frame(separate(datHE,col= Timestamp..Hour.Ending., into=c('date','time'),sep = "^\\S*\\K\\s+" ))
+datD <- as.data.frame(separate(datHE.2,col= time, into=c('hour',"locale"),sep = "^\\S*\\K\\s+" ))
 
 
 #1=am, 2=pm
@@ -235,8 +192,23 @@ datD$`AM/PM` <- ifelse(datD$AM.PM==1, "AM", "PM")
 #time with proper formatting
 datD$time <- paste(datD$date,datD$hour, datD$`AM/PM`)
 
-                            
-                            
+datDdates <- mdy_h(datD$time)
+datD$hod <- hour(datDdates)+(minute(datDdates)/60)
+
+H <- datD$hod
+datD$rl.hod <- ifelse(H==0,1,
+                      ifelse(H==1,2,ifelse(H==2,3,ifelse(H==3,4,ifelse(H==4,5,
+                      ifelse(H==5,6,ifelse(H==6,7,ifelse(H==7,8,ifelse(H==8,9,
+                      ifelse(H==9,10,ifelse(H==10,11,ifelse(H==11,12,
+                      ifelse(H==12,13,ifelse(H==13,14,
+                      ifelse(H==14,15,ifelse(H==15,16,ifelse(H==16,17,
+                      ifelse(H==17,18,
+                      ifelse(H==18,19,ifelse(H==19,20,
+                      ifelse(H==20,21,ifelse(H==21,22,
+                      ifelse(H==22,23,24)))))))))))))))))))))))
+
+datD=subset(datD, select = -c(1,5,13))                            
+
                          
 #####   Formatting Hourly T to combine with EDem             ####
 
@@ -278,8 +250,6 @@ view(datT)
 which(is.na(datT), arr.ind = TRUE)
 #no NA
 
-##making fahrenheit from celsius
-datT$Temp.F <- ((datT$`Avg. Air Temp`)*(9/5))+32
 
 #####   Histograms Temp                                      #####
 
@@ -321,9 +291,15 @@ shapiro.test(E21$Demand..MWh.)
 #####   Plotting Temp and Elec Demand for 5 yrs              ####
 
 #plotting all of the T and Elec.Demand data
-plot(x = datT$`Avg. Air Temp`, y=datT$Demand..MWh., xlab = "Avg. Temp.(C)", 
-     ylab = "Elec. Demand(MWh)", 
-     main= "Electricity Demand and Avg. Yr Temp (2017-2021)", pch=1)
+
+datT.2=subset(datT, select = -c(1,3))
+
+plotall <- ggplot(datT.2, aes(x = `Avg. Air Temp`, y = Demand..MWh.,
+                              color = year)) +  geom_point()
+
+plotall+labs(x= "Avg. Air Temp", y="Electricity Demand (MWh)",
+             title = "Daily Electricity Demand per Year ('17-'22)", 
+             colour = "Year")
 
 #####   Adding Seasons to Data                               ####
 
@@ -335,28 +311,43 @@ datT$Season<-ifelse(x>=61 & x<=151 ,"Spring",
 
 # plotting only summer data and deleting duplicate column
 s<- datT[ -c(4,6) ] %>% filter(Season== "Summer")
-sum.T.Ed <- plot(x= s$`Avg. Air Temp`, y= s$Demand..MWh., xlab = "Avg. Temp. (C)", 
-                 ylab = "Elec. Demand (MWh)", pch=1, 
-                 main = "Summer Avg. Temp. change and AZ Electricity Demand") 
 
+s.plot <- ggplot(s, aes(x = `Avg. Air Temp`, y = Demand..MWh.,
+                              color = factor(year))) +  geom_point()+theme_classic()
+
+s.plot+labs(x= "Avg. Air Temp", y="Electricity Demand (MWh)",
+             title = "Summer Daily Electricity Demand('17-'22)", 
+             color = "Year")+scale_color_manual(values = c("White","lightblue1",
+                                                           "lightblue2","lightblue3",
+                                                           "lightblue4"))+ 
+  theme(panel.background = element_rect(fill="gray86"))
 
 
 #plotting winter data 
 #plotting only summer data and deleting duplicate column
 w<- datT[ -c(4,6) ] %>% filter(Season== "Winter")
-win.T.Ed <- plot(x= w$`Avg. Air Temp`, y= w$Demand..MWh., xlab = "Avg. Temp.(C)", 
-                 ylab = "Elec. Demand (MWh)",
-                 main = "Winter Avg. Temp. change and AZ Electricity Demand", pch=1) 
 
-#####   Statistical Analysis: Seasonal                       #####
+w.plot <- ggplot(w, aes(x = `Avg. Air Temp`, y = Demand..MWh.,
+                        color = factor(year))) +  geom_point()+theme_classic()
+
+w.plot+labs(x= "Avg. Air Temp", y="Electricity Demand (MWh)",
+            title = "Winter Daily Electricity Demand('17-'22)", 
+            color = "Year")+scale_color_manual(values = c("White","lightblue1",
+                                                          "lightblue2","lightblue3",
+                                                          "lightblue4"))+ 
+  theme(panel.background = element_rect(fill="gray86"))
+#####   Statistical Analysis: Summer                         #####
 
 #summer data
 sT <- s$`Avg. Air Temp`
 sE <- s$Demand..MWh.
 cor(sT,sE)
+#correlation value of 0.8695095
+
 cor.test(sT,sE)
 ##strong positive correlation is statistically significant because p-value is greater 
 #than 0.05, null hypothesis is 0 correlation
+#p-value < 2.2e-16
 s.reg <- lm(sE~sT)
 summary(s.reg)
 
@@ -364,34 +355,62 @@ summary(s.reg)
 
 plot(s.reg)
 hist(s.reg$residuals)
-##are residuals normally distributed?
+##are residuals normally distributed, yes
 ##QQ plot looks normal
 ##Variance of residuals looks equal
 
-## winter 
+
+#####   Plotting Linear Regression: Summer                   #####
+
+##Summer scatter plot and linear regression
+
+slm.plot <- ggplot(s, aes(x = `Avg. Air Temp`, y = Demand..MWh.))+
+  geom_point()+theme_classic()+
+  geom_smooth(method = "lm", formula= y~x, aes(color= "Regression"))
+
+slm.plot+labs(x= "Avg. Air Temp", y="Electricity Demand (MWh)",
+            title = "Summer Daily Electricity Demand('17-'22)")+
+  theme(panel.background = element_rect(fill="gray86"),
+        legend.position = c(0.8, 0.2), legend.background = 
+          element_rect(fill="gray86"), legend.title = 
+          element_text(colour="gray86"))
+
+#plotting variance of residuals
+
+elec.res <- resid(s.reg)
+
+plot(s$`Avg. Air Temp`,elec.res,
+     ylab="Residuals", xlab="Avg. Air Temp", main="Summer Electricity Demand") 
+abline(0, 0)
+ 
+#Summer 5 yr data: QQ plot
+
+plot(s.reg,2)
+hist(s.reg$residuals, main= "Histogram of Summer Electricity and Temperature 
+     Residuals",xlab= "Residuals: Summer Electricity~Summer Temperature")
+
+
+#####   Statistical Analysis: Winter                         #####
+
+ 
 wT <- w$`Avg. Air Temp`
 wE <- w$Demand..MWh.
 cor(wT,wE)
+# -0.7079715 correlation
+
 cor.test(wT,wE)
 ##strong negative correlation is statistically significant because p-value is less  
 #than 0.05, null hypothesis is 0 correlation
+#p-value < 2.2e-16
+##Multiple R-squared:  0.5012,	Adjusted R-squared:  0.5001 gave vote of no confidence
 w.reg <- lm(wE~wT)
 summary(w.reg)
 
-#plotting residuals
-
-plot(w.reg) 
-
-hist(w.reg$residuals)
-
-hist(w$Demand..MWh.)
-shapiro.test(w$Demand..MWh.)
-
-w$e.dem.log <- log(w$Demand..MWh.)
+#because of the low Adj, R^2, I chose to focus in on summer more
 
 #####   Yearly Plotting                                      ####
 
-#yearly seasonal data
+#yearly data
 ##2017 plot
 plot(x = TED17$`Avg. Air Temp`, y=TED17$Demand..MWh., xlab = "Avg. Temp.(C)", 
      ylab = "Elec. Demand(MWh)", 
@@ -574,7 +593,7 @@ hw.20 <- filter(s.hr.20 , `Day of Year (DOY)`==193|`Day of Year (DOY)`==194|
                   `Day of Year (DOY)`==212|`Day of Year (DOY)`==213|
                   `Day of Year (DOY)`==214|`Day of Year (DOY)`==227|`Day of Year (DOY)`==228)
 
-#extracting summer from overall 2020
+#extracting summer from overall 2021
 s.hr.21 <- T21.2 %>% filter(between(`Day of Year (DOY)`,152,243))
 
 #looking at specific days that had heat waves from s.21 data, 168-71, 189-90
@@ -582,25 +601,158 @@ hw.21 <- filter(s.hr.21 , `Day of Year (DOY)`==168|`Day of Year (DOY)`==169|
                   `Day of Year (DOY)`==170|`Day of Year (DOY)`==171|
                   `Day of Year (DOY)`==189|`Day of Year (DOY)`==190)
 
+Twave_combo <- bind_rows(hw.17,hw.18,hw.19,hw.20, hw.21)
+
+colnames(Twave_combo) <- c("year","doy","hod","air.T")
 #####   Filtering out days from Electricity data to match HW ####
 
 #looking at specific days that had heat waves from 17 data, 171-2, 175-6,188-9
-HE17 <- filter(E.hr.17,doy==171| doy== 172|doy == 175| doy== 176| doy== 188|
-                 doy== 189) 
+HE17 <- datD[datD$year==2017,]
+he.17 <- filter(HE17,doy==171| doy== 172|doy == 175| doy== 176| doy== 188|doy== 189)
+  
 
 #looking at specific days that had heat waves from s.18 data, 204-8, 217-8
-HE18 <- filter(E.hr.18, doy==204 |doy ==205|doy==206| doy==207|doy==208|doy==217|
-                 doy==218)
+HE18 <- datD[datD$year==2018,]
+he.18 <- filter(HE18,doy==204 |doy ==205|doy==206| doy==207|doy==208|doy==217|
+                  doy==218)
+
 
 #looking at specific days that had heat waves from s.19 data,207-10
-HE19 <- filter(E.hr.19, doy==207 |doy ==208|doy==209| doy==210)
+HE19 <- datD[datD$year==2019,]
+he.19 <- filter(HE19,doy==207 |doy ==208|doy==209| doy==210)
 
 #looking at specific days that had heat waves from s.20 data,193-5, 211-214, 227-8
-HE20 <- filter(E.hr.20, doy==193 |doy ==194|doy==195| doy==211|doy==212|doy==213|
-                 doy==214| doy==227| doy==228)
+HE20 <- datD[datD$year==2020,]
+he.20 <- filter(HE20,doy==193 |doy ==194|doy==195| doy==211|doy==212|doy==213|
+                  doy==214| doy==227| doy==228)
 
 #looking at specific days that had heat waves from s.21 data, 168-71, 189-90
-HE21 <- filter(E.hr.21, doy==168 |doy ==169|doy==170| doy==171|doy==189|doy==190)
+HE21 <- datD[datD$year==2021,]
+he.21 <- filter(HE21,doy==168 |doy ==169|doy==170| doy==171|doy==189|doy==190)
+
+HE.combo <- bind_rows(he.17,he.18,he.19,he.20,he.21) 
+
+
+datHW <- bind_cols(Twave_combo,HE.combo)
+
+datHW=subset(datHW, select = -c(1:2,5:6,11,12,14))
+
+colnames(datHW) <- c("hod","air.temp","Electricity.Demand","doy","year","month",
+                     "timestamp")
+
+
+#####   Plotting Heat Wave Data: All Years                   #####
+
+
+hw.plot <- ggplot(datHW,aes(x = hod,y=Electricity.Demand))+ 
+  geom_point(aes(color=air.temp))+theme_classic()
+
+hw.plot+labs(x= "Hour of Day", y="Electricity Demand (MWh)",
+            title = "Heat Waves: Hourly Electricity Demand ('17 - '22)",color = "Avg\nTemp")+
+  theme(panel.background = element_rect(fill="gray86"),#legend.position = c(.8,.25),
+        legend.background =element_rect(fill="gray86"),legend.title = 
+          element_text(size = 12) )+scale_color_viridis_c()+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 12))
+
+###lm fitting: using sin ##
+xc<-cos(2*pi*datHW$hod/24)
+xs<-sin(2*pi*datHW$hod/24)
+
+fit.lm<-lm(datHW$Electricity.Demand~xc+xs)
+
+# access the fitted series (for plotting)
+fit <- as.data.frame(fitted(fit.lm))  
+
+
+plot(Electricity.Demand ~ hod, data= datHW, xlim=c(0, 24),
+     main="Heat Wave: Sin Regression Line", xaxt = "n",xlab="Hour of Day",
+     ylab="Electricity Demand (MWh)")
+lines(fit, col="red")
+legend("topleft",legend = "sin fit", col = "red",lty=1)
+axis(1,at=seq(0,24,2))
+
+#####   Plotting Hottest Values and zooming in               #####
+
+hrhw.plot <- ggplot(datHW,aes(x = air.temp,y=Electricity.Demand))+ 
+  geom_point()+theme_classic()
+
+hrhw.plot+labs(x= "Temp (C)", y="Electricity Demand (MWh)",
+             title = "Heat Waves: Hourly Electricity Demand and Air Temperature ('17 - '22)",)+
+  theme(panel.background = element_rect(fill="gray86"))
+
+####      Statistical Analysis: Heat Waves and E. Demand     #####
+hw.reg <- lm(datHW$Electricity.Demand~datHW$air.temp)
+
+summary(hw.reg)
+plot(hw.reg)
+
+hist(hw.reg$residuals, main= "Histogram of Heat Wave Residuals", xlab= 
+       "Heat Wave Regression Residuals" )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
